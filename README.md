@@ -1,6 +1,6 @@
-# GeoBrains 🧠
+# GeoBrains 🌍 - Geography Quiz Website
 
-GeoBrains is a powerful geographic management and visualization tool built with **React**, **Vite**, **Leaflet**, and **Prisma**. It allows users to manage spatial data with ease, featuring a modern UI and robust database integration.
+GeoBrains is an interactive geography quiz website that helps users test and improve their knowledge of world geography. Built with **React**, **Vite**, **Leaflet**, and **Prisma**, it features an engaging quiz interface with map visualization and robust database integration.
 
 ## 🚀 Getting Started
 
@@ -40,6 +40,12 @@ GeoBrains is a powerful geographic management and visualization tool built with 
    npm run dev
    ```
    The app will be available at `http://localhost:5173` (or your local Vite port).
+
+## 🎯 Features
+- **Interactive Quizzes**: Test your knowledge of countries, capitals, and landmarks
+- **Map Visualization**: See quiz questions on an interactive map
+- **Progress Tracking**: Monitor your quiz performance and improvement
+- **Responsive Design**: Works on desktop and mobile devices
 
 ## 🛠 Tech Stack
 - **Frontend**: React, Tailwind CSS, Leaflet, Lucide React
