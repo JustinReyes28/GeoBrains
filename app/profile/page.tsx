@@ -20,8 +20,10 @@ import {
     BarChart3,
     Milestone,
     Mountain,
-    User
+    User,
+    LogOut
 } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 import { cn } from '../../src/lib/utils';
 
 // Mock data for demonstration - will be replaced with API calls
@@ -106,6 +108,13 @@ export default function ProfilePage() {
                             <Trophy className="w-4 h-4 text-amber-400" />
                             <span className="text-sm font-semibold">{mockUser.totalScore.toLocaleString()}</span>
                         </div>
+                        <button
+                            onClick={() => signOut({ callbackUrl: '/auth/login' })}
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-card hover:bg-white/10 transition-colors text-text-secondary hover:text-red-400"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            <span className="text-sm font-medium">Sign Out</span>
+                        </button>
                     </div>
                 </div>
             </nav>
