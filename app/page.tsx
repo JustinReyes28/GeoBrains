@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import {
     Globe2,
     Flag,
@@ -41,7 +42,7 @@ export default function Home() {
     return (
         <div className="min-h-screen bg-bg-primary text-text-primary selection:bg-brand/30">
             {/* Header */}
-            <nav className="fixed top-0 w-full z-50 glass-panel border-b border-white/5">
+            <nav className="fixed top-0 w-full z-[1000] glass-panel border-b border-white/5">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center shadow-lg shadow-brand/20">
@@ -51,12 +52,12 @@ export default function Home() {
                     </div>
 
                     <div className="flex items-center gap-6">
-                        <button className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+                        <Link href="/profile?tab=leaderboard" className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
                             <Trophy className="w-4 h-4" /> Leaderboard
-                        </button>
-                        <button className="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:scale-105">
-                            <User className="w-5 h-5" />
-                        </button>
+                        </Link>
+                        <Link href="/profile" className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+                            <User className="w-4 h-4" /> Profile
+                        </Link>
                     </div>
                 </div>
             </nav>
