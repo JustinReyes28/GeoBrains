@@ -6,7 +6,7 @@ GeoBrains is an interactive geography quiz website that helps users test and imp
 
 ### Prerequisites
 - **Node.js**: (v18 or higher recommended)
-- **XAMPP / MySQL**: For local database storage (Default port: `3307`)
+- **PostgreSQL**: For local database storage (Default port: `5432`)
 - **VS Code**: Recommended editor
 
 ### Local Setup
@@ -27,7 +27,7 @@ GeoBrains is an interactive geography quiz website that helps users test and imp
    ```bash
    cp .env.example .env
    ```
-   *Edit `.env` and set your `DATABASE_URL`.*
+   *Edit `.env` and set your `POSTGRES_PRISMA_URL` and `POSTGRES_URL_NON_POOLING`. The `POSTGRES_PRISMA_URL` is used for connection pooling, while `POSTGRES_URL_NON_POOLING` is for direct database access.*
 
 4. **Initialize the Database**:
    ```bash
@@ -51,7 +51,7 @@ GeoBrains is an interactive geography quiz website that helps users test and imp
 ## 🛠 Tech Stack
 - **Framework**: Next.js 16+ (App Router)
 - **Frontend**: React 19, Tailwind CSS, Leaflet, Lucide React
-- **Backend / DB**: Prisma, Vercel Serverless (Ready)
+- **Backend / DB**: Prisma with PostgreSQL, Vercel Serverless (Ready)
 - **State Management**: TanStack Query (React Query)
 - **Styling**: Tailwind CSS v4
 

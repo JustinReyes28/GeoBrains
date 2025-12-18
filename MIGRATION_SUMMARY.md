@@ -56,7 +56,11 @@ This project has been successfully migrated from a Vite + React setup to Next.js
 - **Maintained**: TanStack Query (React Query) - unchanged
 
 ### 6. Database
-- **Maintained**: Prisma with MySQL - unchanged
+- **Changed**: Migrated from MySQL to PostgreSQL
+- **Details**: Prisma now targets PostgreSQL (provider changed from MySQL to PostgreSQL)
+- **Dependencies**: Added `@vercel/postgres` for PostgreSQL support
+- **Environment Variables**: Switched from `DATABASE_URL` (MySQL format) to `POSTGRES_PRISMA_URL` and `POSTGRES_URL_NON_POOLING` (PostgreSQL format)
+- **Migration Commands**: Used `prisma migrate` to apply schema changes for PostgreSQL
 
 ## .gitignore Updates
 
