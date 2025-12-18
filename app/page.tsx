@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import {
     Globe2,
     Flag,
@@ -51,12 +52,12 @@ export default function Home() {
                     </div>
 
                     <div className="flex items-center gap-6">
-                        <button className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+                        <Link href="/profile?tab=leaderboard" className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
                             <Trophy className="w-4 h-4" /> Leaderboard
-                        </button>
-                        <button className="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:scale-105">
-                            <User className="w-5 h-5" />
-                        </button>
+                        </Link>
+                        <Link href="/profile" className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+                            <User className="w-4 h-4" /> Profile
+                        </Link>
                     </div>
                 </div>
             </nav>
