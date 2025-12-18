@@ -10,7 +10,7 @@ interface GeoMapProps extends MapContainerProps {
 
 export const GeoMap = ({ className, children, ...props }: GeoMapProps) => {
     return (
-        <div className={cn("relative w-full h-full rounded-xl overflow-hidden shadow-2xl border border-white/20", className)}>
+        <div className={cn("relative w-full h-full rounded-xl overflow-hidden shadow-2xl border border-white/20 z-10", className)}>
             <MapContainer
                 center={[20, 0]}
                 zoom={2}

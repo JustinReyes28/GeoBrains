@@ -41,7 +41,7 @@ export default function Home() {
     return (
         <div className="min-h-screen bg-bg-primary text-text-primary selection:bg-brand/30">
             {/* Header */}
-            <nav className="fixed top-0 w-full z-50 glass-panel border-b border-white/5">
+            <nav className="fixed top-0 w-full z-[1000] glass-panel border-b border-white/5">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center shadow-lg shadow-brand/20">
