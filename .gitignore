@@ -8,8 +8,15 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+
+# Next.js
+.next/
+out/
+
+# Vite (legacy)
 dist
 dist-ssr
+
 *.local
 
 # Editor directories and files
@@ -23,8 +30,13 @@ dist-ssr
 *.sln
 *.sw?
 
+# Prisma
 /src/generated/prisma
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # IDE / editor folders
 .idea/
@@ -37,3 +49,27 @@ node_modules/
 
 # Composer dependencies
 vendor/
+
+# Build output
+build_output.txt
+
+# TypeScript cache
+.next/types/*
+
+# Next.js cache
+.next/cache/*
+
+# Next.js build artifacts
+.next/build/*
+.next/static/*
+.next/server/*
+
+# Next.js development artifacts
+.next/dev/*
+
+# Next.js trace files
+.next/trace/*
+.next/trace-build/*
+
+# Next.js diagnostics
+.next/diagnostics/*

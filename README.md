@@ -1,6 +1,6 @@
 # GeoBrains 🌍 - Geography Quiz Website
 
-GeoBrains is an interactive geography quiz website that helps users test and improve their knowledge of world geography. Built with **React**, **Vite**, **Leaflet**, and **Prisma**, it features an engaging quiz interface with map visualization and robust database integration.
+GeoBrains is an interactive geography quiz website that helps users test and improve their knowledge of world geography. Built with **Next.js**, **React**, **Leaflet**, and **Prisma**, it features an engaging quiz interface with map visualization and robust database integration.
 
 ## 🚀 Getting Started
 
@@ -39,24 +39,27 @@ GeoBrains is an interactive geography quiz website that helps users test and imp
    ```bash
    npm run dev
    ```
-   The app will be available at `http://localhost:5173` (or your local Vite port).
+   The app will be available at `http://localhost:3000` (Next.js default port).
 
 ## 🎯 Features
 - **Interactive Quizzes**: Test your knowledge of countries, capitals, and landmarks
 - **Map Visualization**: See quiz questions on an interactive map
 - **Progress Tracking**: Monitor your quiz performance and improvement
 - **Responsive Design**: Works on desktop and mobile devices
+- **Next.js App Router**: Modern file-based routing with React Server Components
 
 ## 🛠 Tech Stack
-- **Frontend**: React, Tailwind CSS, Leaflet, Lucide React
+- **Framework**: Next.js 16+ (App Router)
+- **Frontend**: React 19, Tailwind CSS, Leaflet, Lucide React
 - **Backend / DB**: Prisma, Vercel Serverless (Ready)
 - **State Management**: TanStack Query (React Query)
+- **Styling**: Tailwind CSS v4
 
 ## 📦 Scripts
 - `npm run dev`: Start dev server
 - `npm run build`: Build for production
+- `npm run start`: Run production server
 - `npm run lint`: Run ESLint checks
-- `npm run preview`: Preview the production build locally
 
 ## 📄 License
-[MIT](LICENSE) (or your preferred license)
+[MIT](LICENSE)
