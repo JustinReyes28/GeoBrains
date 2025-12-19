@@ -2,6 +2,7 @@
 
 import { prisma } from "./prisma";
 import { auth } from "../auth";
+import { Prisma } from "@prisma/client";
 
 /**
  * Masks a user ID for logging purposes to avoid exposing PII
@@ -70,27 +71,32 @@ export async function getUserLeaderboardStats(userId: string): Promise<UserLeade
         const totalQuizzes = userScoreAggregate._count.id ?? 0;
         const accuracy = Math.round(userScoreAggregate._avg.value ?? 0);
 
-        // Calculate rank by counting users with a higher total score
-        const allUserScores = await prisma.score.groupBy({
+        // Calculate rank using database-side window function for efficiency
+        interface RankResult {
+            rank: bigint;
+        }
+
+        const rankResult = await prisma.$queryRaw<RankResult[]>(
+            Prisma.sql`
+                WITH ranked_users AS (
+                    SELECT "userId", DENSE_RANK() OVER (ORDER BY SUM(value) DESC) as rank
+                    FROM "Score"
+                    GROUP BY "userId"
+                )
+                SELECT rank FROM ranked_users WHERE "userId" = ${userId}
+            `
+        );
+
+        // Calculate total number of users with scores for fallback
+        const totalUsersResult = await prisma.score.groupBy({
             by: ["userId"],
             _sum: { value: true },
         });
 
-        // Sort by total score descending
-        const sortedScores = allUserScores
-            .map((entry) => ({
-                userId: entry.userId,
-                totalScore: entry._sum.value ?? 0,
-            }))
-            .sort((a, b) => b.totalScore - a.totalScore);
-
-        // Find the user's rank (1-indexed)
-        let rank = sortedScores.findIndex((entry) => entry.userId === userId) + 1;
-
-        // If user has no scores, they won't be in the list, so rank is last
-        if (rank === 0) {
-            rank = sortedScores.length + 1;
-        }
+        // Convert rank from bigint to Number, fallback to total users + 1 if no scores
+        const rank = rankResult.length > 0 && rankResult[0].rank 
+            ? Number(rankResult[0].rank)
+            : totalUsersResult.length + 1;
 
         // Format join date (e.g., "December 2024")
         const joinDate = user.createdAt.toLocaleDateString('en-US', {

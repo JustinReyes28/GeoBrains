@@ -103,27 +103,31 @@ async function checkAccountLockout(request: Request, user: any) {
 
 async function handleFailedLogin(request: Request, user: any) {
     const now = new Date();
-    const failedAttemptCount = user.failedAttemptCount + 1;
 
     // Calculate lockout duration based on failed attempts
+    // We need to determine the new failedAttemptCount to calculate lockout
+    const newFailedAttemptCount = user.failedAttemptCount + 1;
     let lockedUntil = null;
-    if (failedAttemptCount >= MAX_FAILED_ATTEMPTS) {
-        const lockoutIndex = Math.min(failedAttemptCount - MAX_FAILED_ATTEMPTS, LOCKOUT_DURATIONS.length - 1);
+    if (newFailedAttemptCount >= MAX_FAILED_ATTEMPTS) {
+        const lockoutIndex = Math.min(newFailedAttemptCount - MAX_FAILED_ATTEMPTS, LOCKOUT_DURATIONS.length - 1);
         lockedUntil = new Date(now.getTime() + LOCKOUT_DURATIONS[lockoutIndex]);
     }
 
-    // Update user record atomically
+    // Update user record atomically using Prisma's increment operation
     const updatedUser = await prisma.user.update({
         where: { id: user.id },
         data: {
-            failedAttemptCount,
+            failedAttemptCount: { increment: 1 }, // Atomic increment
             lastFailedAt: now,
             lockedUntil,
         },
     });
 
+    // Use the actual updated count from the database for audit logging
+    const actualFailedAttemptCount = updatedUser.failedAttemptCount;
+
     await logAudit(request, user.id, "LOGIN_FAILED", {
-        failedAttemptCount,
+        failedAttemptCount: actualFailedAttemptCount,
         lockedUntil,
         reason: "Invalid credentials",
     });
