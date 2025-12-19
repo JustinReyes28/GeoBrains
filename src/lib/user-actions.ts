@@ -87,28 +87,8 @@ export async function getUserLeaderboardStats(userId: string): Promise<UserLeade
             `
         );
 
-        // Calculate total number of users with scores for fallback
-        const totalUsersResult = await prisma.score.groupBy({
-            by: ["userId"],
-            _sum: { value: true },
-        });
-
-        // Calculate count of users with higher scores for alternative ranking
-        interface HigherScoresCount {
-            count: bigint;
-        }
-
-        const higherScoresCount = await prisma.$queryRaw<HigherScoresCount[]>(
-            Prisma.sql`
-                SELECT COUNT(DISTINCT "userId") as count
-                FROM "Score"
-                GROUP BY "userId"
-                HAVING SUM(value) > ${userTotalScore}
-            `
-        );
-
-        // Calculate rank: count of users with higher scores + 1
-        const rank = (higherScoresCount.length > 0 ? Number(higherScoresCount[0].count) : 0) + 1;
+        // Calculate rank from the DENSE_RANK result
+        const rank = rankResult.length > 0 ? Number(rankResult[0].rank) : 1;
 
         // Format join date (e.g., "December 2024")
         const joinDate = user.createdAt.toLocaleDateString('en-US', {
