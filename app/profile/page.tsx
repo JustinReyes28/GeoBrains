@@ -132,7 +132,9 @@ export default function ProfilePage() {
                             <>
                                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-card">
                                     <Trophy className="w-4 h-4 text-amber-400" />
-                                    <span className="text-sm font-semibold">{mockUser.totalScore.toLocaleString()}</span>
+                                    <span className="text-sm font-semibold">
+                                        {statsLoading ? '...' : (userStats?.totalScore ?? 0).toLocaleString()}
+                                    </span>
                                 </div>
                                 <button
                                     type="button"
@@ -187,21 +189,31 @@ export default function ProfilePage() {
 
                                 {/* User Info */}
                                 <div className="flex-1 text-center md:text-left">
-                                    <h1 className="text-3xl md:text-4xl font-bold mb-2">{mockUser.name}</h1>
-                                    <p className="text-text-secondary mb-4">Member since {mockUser.joinDate}</p>
+                                    <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                                        {userStats?.name ?? session?.user?.name ?? 'Geography Master'}
+                                    </h1>
+                                    <p className="text-text-secondary mb-4">
+                                        {statsLoading ? 'Loading member info...' : `Member since ${userStats?.joinDate ?? mockUser.joinDate}`}
+                                    </p>
 
                                     <div className="flex flex-wrap justify-center md:justify-start gap-3">
                                         <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-panel">
                                             <Medal className="w-4 h-4 text-amber-400" />
-                                            <span className="text-sm font-medium">Rank #{mockUser.globalRank}</span>
+                                            <span className="text-sm font-medium">
+                                                Rank #{statsLoading ? '...' : (userStats?.rank ?? 0)}
+                                            </span>
                                         </div>
                                         <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-panel">
                                             <Target className="w-4 h-4 text-emerald-400" />
-                                            <span className="text-sm font-medium">{mockUser.accuracy}% Accuracy</span>
+                                            <span className="text-sm font-medium">
+                                                {statsLoading ? '...' : (userStats?.accuracy ?? 0)}% Accuracy
+                                            </span>
                                         </div>
                                         <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-panel">
                                             <Zap className="w-4 h-4 text-purple-400" />
-                                            <span className="text-sm font-medium">{mockUser.totalQuizzes} Quizzes</span>
+                                            <span className="text-sm font-medium">
+                                                {statsLoading ? '...' : (userStats?.totalQuizzes ?? 0)} Quizzes
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -209,7 +221,9 @@ export default function ProfilePage() {
                                 {/* Total Score Card */}
                                 <div className="glass-panel rounded-2xl p-6 text-center min-w-[180px]">
                                     <Trophy className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                                    <div className="text-3xl font-bold text-gradient">{mockUser.totalScore.toLocaleString()}</div>
+                                    <div className="text-3xl font-bold text-gradient">
+                                        {statsLoading ? '...' : (userStats?.totalScore ?? 0).toLocaleString()}
+                                    </div>
                                     <p className="text-sm text-text-secondary mt-1">Total Points</p>
                                 </div>
                             </div>

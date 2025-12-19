@@ -41,6 +41,13 @@ model AuditLog {
   ipAddress     String?
   userAgent     String?
   metadata      Json?    // Additional context like error reason
+
+  // Indexes for query performance
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
+  @@index([userId, timestamp])
+  @@index([action, timestamp])
 }
 
 model Account {

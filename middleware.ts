@@ -11,10 +11,55 @@ const requestCounts = new Map();
 const RATE_LIMIT = 10; // 10 requests
 const RATE_LIMIT_WINDOW = 10000; // 10 seconds
 
-function getClientIp(request: Request) {
-    return request.headers.get("x-forwarded-for") ||
-        request.headers.get("x-real-ip") ||
-        "unknown";
+
+
+function cleanupRequestCounts() {
+    const now = Date.now();
+    let entryCount = 0;
+    
+    // First pass: clean up old timestamps and count entries
+    for (const [ip, timestamps] of requestCounts.entries()) {
+        // Filter timestamps to keep only those within the rate limit window
+        const filteredTimestamps = (timestamps as number[]).filter((timestamp: number) => {
+            return now - timestamp < RATE_LIMIT_WINDOW;
+        });
+        
+        if (filteredTimestamps.length > 0) {
+            // Update with filtered timestamps
+            requestCounts.set(ip, filteredTimestamps);
+            entryCount++;
+        } else {
+            // Remove entries with no recent activity
+            requestCounts.delete(ip);
+        }
+    }
+    
+    // Second pass: enforce max entries if needed (FIFO eviction - remove oldest)
+    if (entryCount > MAX_ENTRIES) {
+        // Convert to array of entries with their last access time
+        const entriesWithAccessTime = Array.from(requestCounts.entries()).map(([ip, timestamps]) => {
+            const lastTimestamp = timestamps.length > 0 ? Math.max(...(timestamps as number[])) : 0;
+            return { ip, lastTimestamp };
+        });
+        
+        // Sort by last access time (oldest first)
+        entriesWithAccessTime.sort((a, b) => a.lastTimestamp - b.lastTimestamp);
+        
+        // Remove oldest entries until we're under the limit
+        const entriesToRemove = entryCount - MAX_ENTRIES;
+        for (let i = 0; i < entriesToRemove; i++) {
+            const oldestEntry = entriesWithAccessTime[i];
+            requestCounts.delete(oldestEntry.ip);
+        }
+    }
+}
+
+function getClientIp(request: Request): string {
+    // Use the trusted-proxy-aware client info extraction
+    const clientContext = extractClientInfoFromRequest(request);
+    
+    // Return the validated IP from client context, falling back to "unknown" if not available
+    return clientContext.ip || "unknown";
 }
 
 async function rateLimitMiddleware(request: Request) {
@@ -68,7 +113,19 @@ async function rateLimitMiddleware(request: Request) {
     return response;
 }
 
-export default auth((req) => {
+// Consolidated middleware handler that contains all the route protection logic
+async function consolidatedMiddlewareHandler(req: any) {
+    // Apply rate limiting first
+    const rateLimitResponse = await rateLimitMiddleware(req);
+    if (rateLimitResponse.status === 429) {
+        return rateLimitResponse;
+    }
+
+    // Extract client info and set request context
+    const clientContext = extractClientInfoFromRequest(req);
+    setRequestContext(req, clientContext);
+
+    // Route protection logic (moved from the default export)
     const isLoggedIn = !!req.auth;
     const { nextUrl } = req;
 
@@ -79,7 +136,7 @@ export default auth((req) => {
 
     // Allow API auth routes to pass through
     if (isApiAuthRoute) {
-        return;
+        return NextResponse.next();
     }
 
     // If on auth page and logged in, redirect to home
@@ -101,25 +158,15 @@ export default auth((req) => {
         );
     }
 
-    return;
-});
+    // Continue with the request if no special handling is needed
+    return NextResponse.next();
+}
+
+// Export the consolidated handler wrapped with auth for the default export
+export default auth(consolidatedMiddlewareHandler);
 
 // Optionally, don't invoke Middleware on some paths
 export const config = {
     matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
 
-export async function middleware(request: any) {
-    // Apply rate limiting first
-    const rateLimitResponse = await rateLimitMiddleware(request);
-    if (rateLimitResponse.status === 429) {
-        return rateLimitResponse;
-    }
-
-    // Extract client info and set request context
-    const clientContext = extractClientInfoFromRequest(request);
-    setRequestContext(request, clientContext);
-
-    // Continue with auth middleware
-    return auth(request);
-}

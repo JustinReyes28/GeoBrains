@@ -7,6 +7,9 @@ export interface UserLeaderboardStats {
     name: string | null;
     totalScore: number;
     rank: number;
+    totalQuizzes: number;
+    accuracy: number;
+    joinDate: string;
 }
 
 /**
@@ -15,25 +18,29 @@ export interface UserLeaderboardStats {
  */
 export async function getUserLeaderboardStats(userId: string): Promise<UserLeaderboardStats | null> {
     try {
-        // Get the user's basic info
+        // Get the user's basic info including createdAt for join date
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { id: true, name: true },
+            select: { id: true, name: true, createdAt: true },
         });
 
         if (!user) {
             return null;
         }
 
-        // Calculate the user's total score
+        // Calculate the user's total score and quiz count
         const userScoreAggregate = await prisma.score.aggregate({
             where: { userId },
             _sum: { value: true },
+            _count: { id: true },
+            _avg: { value: true },
         });
+
         const userTotalScore = userScoreAggregate._sum.value ?? 0;
+        const totalQuizzes = userScoreAggregate._count.id ?? 0;
+        const accuracy = Math.round(userScoreAggregate._avg.value ?? 0);
 
         // Calculate rank by counting users with a higher total score
-        // We need to get all users' total scores and determine position
         const allUserScores = await prisma.score.groupBy({
             by: ["userId"],
             _sum: { value: true },
@@ -55,11 +62,20 @@ export async function getUserLeaderboardStats(userId: string): Promise<UserLeade
             rank = sortedScores.length + 1;
         }
 
+        // Format join date (e.g., "December 2024")
+        const joinDate = user.createdAt.toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric'
+        });
+
         return {
             id: user.id,
             name: user.name,
             totalScore: userTotalScore,
             rank,
+            totalQuizzes,
+            accuracy,
+            joinDate,
         };
     } catch (error) {
         console.error("Error fetching user leaderboard stats:", error);
