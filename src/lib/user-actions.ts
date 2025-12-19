@@ -2,6 +2,7 @@
 
 import { prisma } from "./prisma";
 import { auth } from "../auth";
+import { Prisma } from "@prisma/client";
 
 /**
  * Masks a user ID for logging purposes to avoid exposing PII
@@ -41,13 +42,13 @@ export async function getUserLeaderboardStats(userId: string): Promise<UserLeade
     try {
         // Get the current session to verify authorization
         const session = await auth();
-        
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
             console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access data for user ${maskUserId(userId)}`);
             return null;
         }
-        
+
         // Get the user's basic info including createdAt for join date
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -70,27 +71,44 @@ export async function getUserLeaderboardStats(userId: string): Promise<UserLeade
         const totalQuizzes = userScoreAggregate._count.id ?? 0;
         const accuracy = Math.round(userScoreAggregate._avg.value ?? 0);
 
-        // Calculate rank by counting users with a higher total score
-        const allUserScores = await prisma.score.groupBy({
+        // Calculate rank using database-side window function for efficiency
+        interface RankResult {
+            rank: bigint;
+        }
+
+        const rankResult = await prisma.$queryRaw<RankResult[]>(
+            Prisma.sql`
+                WITH ranked_users AS (
+                    SELECT "userId", DENSE_RANK() OVER (ORDER BY SUM(value) DESC) as rank
+                    FROM "Score"
+                    GROUP BY "userId"
+                )
+                SELECT rank FROM ranked_users WHERE "userId" = ${userId}
+            `
+        );
+
+        // Calculate total number of users with scores for fallback
+        const totalUsersResult = await prisma.score.groupBy({
             by: ["userId"],
             _sum: { value: true },
         });
 
-        // Sort by total score descending
-        const sortedScores = allUserScores
-            .map((entry) => ({
-                userId: entry.userId,
-                totalScore: entry._sum.value ?? 0,
-            }))
-            .sort((a, b) => b.totalScore - a.totalScore);
-
-        // Find the user's rank (1-indexed)
-        let rank = sortedScores.findIndex((entry) => entry.userId === userId) + 1;
-
-        // If user has no scores, they won't be in the list, so rank is last
-        if (rank === 0) {
-            rank = sortedScores.length + 1;
+        // Calculate count of users with higher scores for alternative ranking
+        interface HigherScoresCount {
+            count: bigint;
         }
+
+        const higherScoresCount = await prisma.$queryRaw<HigherScoresCount[]>(
+            Prisma.sql`
+                SELECT COUNT(DISTINCT "userId") as count
+                FROM "Score"
+                GROUP BY "userId"
+                HAVING SUM(value) > ${userTotalScore}
+            `
+        );
+
+        // Calculate rank: count of users with higher scores + 1
+        const rank = (higherScoresCount.length > 0 ? Number(higherScoresCount[0].count) : 0) + 1;
 
         // Format join date (e.g., "December 2024")
         const joinDate = user.createdAt.toLocaleDateString('en-US', {
@@ -128,13 +146,13 @@ export async function getUserCategoryPerformance(userId: string): Promise<Catego
     try {
         // Get the current session to verify authorization
         const session = await auth();
-        
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
             console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access category performance for user ${maskUserId(userId)}`);
             return [];
         }
-        
+
         // Fetch all categories and user's scores in parallel to avoid N+1 queries
         const [categories, userScores] = await Promise.all([
             prisma.quizCategory.findMany(),
@@ -191,13 +209,13 @@ export async function getUserRecentActivity(userId: string, limit = 4): Promise<
     try {
         // Get the current session to verify authorization
         const session = await auth();
-        
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
             console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access recent activity for user ${maskUserId(userId)}`);
             return [];
         }
-        
+
         const recentScores = await prisma.score.findMany({
             where: { userId },
             include: { category: true },

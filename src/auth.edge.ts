@@ -91,7 +91,9 @@ export function extractClientInfoFromRequest(request: Request): ClientContext {
         if (validIPs.length > 0) {
             // Calculate the index of the client IP based on trusted proxy count
             // Standard approach: client IP is at ips.length - trustedProxyCount - 1
-            // When trustedProxyCount=0: use leftmost IP (index 0)
+            // This uses rightmost-first convention where higher trustedProxyCount values
+            // select IPs further to the left in the X-Forwarded-For list
+            // When trustedProxyCount=0: use rightmost IP (index ips.length - 1)
             // When trustedProxyCount=1: use second IP from right (index ips.length - 2)
             // When trustedProxyCount=2: use third IP from right (index ips.length - 3)
             // Clamp to valid bounds [0, validIPs.length - 1]
