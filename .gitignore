@@ -55,6 +55,7 @@ build_output.txt
 
 # TypeScript cache
 .next/types/*
+tsconfig.tsbuildinfo
 
 # Next.js cache
 .next/cache/*

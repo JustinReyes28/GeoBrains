@@ -11,19 +11,36 @@ datasource db {
 // ==========================================
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?   // For credentials auth (hashed)
+  id                String    @id @default(cuid())
+  name              String?
+  email             String    @unique
+  emailVerified     DateTime?
+  image             String?
+  password          String?   // For credentials auth (hashed)
   
-  accounts      Account[]
-  sessions      Session[]
-  scores        Score[]
+  // Security fields for brute-force protection
+  failedAttemptCount Int      @default(0)
+  lastFailedAt      DateTime?
+  lockedUntil       DateTime?
   
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  accounts          Account[]
+  sessions          Session[]
+  scores            Score[]
+  auditLogs         AuditLog[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  action        String   // e.g., "LOGIN_SUCCESS", "LOGIN_FAILED", "ACCOUNT_LOCKED"
+  timestamp     DateTime @default(now())
+  ipAddress     String?
+  userAgent     String?
+  metadata      Json?    // Additional context like error reason
 }
 
 model Account {
