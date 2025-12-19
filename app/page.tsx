@@ -28,7 +28,7 @@ const GeoMap = dynamic(() => import('../src/components/Map/GeoMap').then(mod => 
 });
 
 const categories = [
-    { id: 'capitals', name: 'Capitals', icon: Globe2, color: 'text-blue-400', desc: 'Identify world capitals' },
+    { id: 'capitals', name: 'Capitals', icon: Globe2, color: 'text-blue-400', desc: 'Identify world capitals', href: '/guess-the-capital' },
     { id: 'flags', name: 'Flag ID', icon: Flag, color: 'text-red-400', desc: 'Name countries by their flags' },
     { id: 'locations', name: 'Map Pin', icon: MapPin, color: 'text-emerald-400', desc: 'Find countries on the map' },
     { id: 'comparisons', name: 'Stats War', icon: BarChart3, color: 'text-amber-400', desc: 'Compare population & area' },
@@ -115,15 +115,11 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {categories.map((cat) => {
                             const Icon = cat.icon;
-                            return (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => setSelectedCategory(cat.id)}
-                                    className={cn(
-                                        "glass-card p-8 rounded-2xl flex flex-col items-start text-left group",
-                                        selectedCategory === cat.id && "border-brand/40 bg-brand/5"
-                                    )}
-                                >
+                            // @ts-ignore
+                            const href = cat.href;
+
+                            const content = (
+                                <>
                                     <div className={cn("p-4 rounded-xl mb-6 bg-white/5 group-hover:scale-110 transition-transform", cat.color)}>
                                         <Icon className="w-8 h-8" />
                                     </div>
@@ -131,6 +127,29 @@ export default function Home() {
                                     <p className="text-sm text-text-secondary leading-relaxed">
                                         {cat.desc}
                                     </p>
+                                </>
+                            );
+
+                            const className = cn(
+                                "glass-card p-8 rounded-2xl flex flex-col items-start text-left group w-full",
+                                selectedCategory === cat.id && "border-brand/40 bg-brand/5"
+                            );
+
+                            if (href) {
+                                return (
+                                    <Link key={cat.id} href={href} className={className}>
+                                        {content}
+                                    </Link>
+                                );
+                            }
+
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setSelectedCategory(cat.id)}
+                                    className={className}
+                                >
+                                    {content}
                                 </button>
                             );
                         })}
