@@ -295,3 +295,49 @@ export async function getLeaderboardRankings(limit = 10): Promise<LeaderboardPla
         return [];
     }
 }
+
+/**
+ * Records a quiz score in the database.
+ * Calculates the percentage score and links it to the user and category.
+ */
+export async function recordQuizScore(
+    score: number,
+    totalQuestions: number,
+    categorySlug: string,
+    timeInSeconds: number = 0
+) {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const userId = session.user.id;
+        const percentageScore = Math.round((score / totalQuestions) * 100);
+
+        // Ensure the category exists
+        const category = await prisma.quizCategory.upsert({
+            where: { slug: categorySlug },
+            update: {},
+            create: {
+                name: categorySlug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+                slug: categorySlug,
+            }
+        });
+
+        // Record the score
+        await prisma.score.create({
+            data: {
+                userId,
+                categoryId: category.id,
+                value: percentageScore,
+                timeInSeconds,
+            }
+        });
+
+        return { success: true };
+    } catch (error) {
+        console.error("Error recording quiz score:", error);
+        return { success: false, error: "Internal Server Error" };
+    }
+}
