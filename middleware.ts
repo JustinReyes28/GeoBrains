@@ -10,20 +10,21 @@ const { auth } = NextAuth(authConfig);
 const requestCounts = new Map();
 const RATE_LIMIT = 10; // 10 requests
 const RATE_LIMIT_WINDOW = 10000; // 10 seconds
+const MAX_ENTRIES = 1000; // Maximum number of IP entries to track
 
 
 
 function cleanupRequestCounts() {
     const now = Date.now();
     let entryCount = 0;
-    
+
     // First pass: clean up old timestamps and count entries
     for (const [ip, timestamps] of requestCounts.entries()) {
         // Filter timestamps to keep only those within the rate limit window
         const filteredTimestamps = (timestamps as number[]).filter((timestamp: number) => {
             return now - timestamp < RATE_LIMIT_WINDOW;
         });
-        
+
         if (filteredTimestamps.length > 0) {
             // Update with filtered timestamps
             requestCounts.set(ip, filteredTimestamps);
@@ -33,7 +34,7 @@ function cleanupRequestCounts() {
             requestCounts.delete(ip);
         }
     }
-    
+
     // Second pass: enforce max entries if needed (FIFO eviction - remove oldest)
     if (entryCount > MAX_ENTRIES) {
         // Convert to array of entries with their last access time
@@ -41,10 +42,10 @@ function cleanupRequestCounts() {
             const lastTimestamp = timestamps.length > 0 ? Math.max(...(timestamps as number[])) : 0;
             return { ip, lastTimestamp };
         });
-        
+
         // Sort by last access time (oldest first)
         entriesWithAccessTime.sort((a, b) => a.lastTimestamp - b.lastTimestamp);
-        
+
         // Remove oldest entries until we're under the limit
         const entriesToRemove = entryCount - MAX_ENTRIES;
         for (let i = 0; i < entriesToRemove; i++) {
@@ -57,7 +58,7 @@ function cleanupRequestCounts() {
 function getClientIp(request: Request): string {
     // Use the trusted-proxy-aware client info extraction
     const clientContext = extractClientInfoFromRequest(request);
-    
+
     // Return the validated IP from client context, falling back to "unknown" if not available
     return clientContext.ip || "unknown";
 }
@@ -70,8 +71,8 @@ async function rateLimitMiddleware(request: Request) {
 
     // Limits and windows based on route type
     const isAuthRoute = pathname.startsWith("/api/auth");
-    const limit = isAuthRoute ? 5 : 10;
-    const window = isAuthRoute ? 5000 : 10000;
+    const limit = isAuthRoute ? 20 : 50; // MORE_RELAXED_LIMIT
+    const window = isAuthRoute ? 10000 : 60000; // 10s for auth, 60s for others
 
     // Simple in-memory rate limiting
     if (!requestCounts.has(ip)) {
@@ -89,15 +90,18 @@ async function rateLimitMiddleware(request: Request) {
         const oldest = timestamps[0];
         const resetTime = Math.ceil((oldest + window - now) / 1000);
 
-        return new NextResponse("Too Many Requests", {
-            status: 429,
-            headers: {
-                "X-RateLimit-Limit": limit.toString(),
-                "X-RateLimit-Remaining": "0",
-                "X-RateLimit-Reset": resetTime.toString(),
-                "Content-Type": "text/plain",
-            },
-        });
+        return new NextResponse(
+            JSON.stringify({ error: "Too Many Requests" }),
+            {
+                status: 429,
+                headers: {
+                    "X-RateLimit-Limit": limit.toString(),
+                    "X-RateLimit-Remaining": "0",
+                    "X-RateLimit-Reset": resetTime.toString(),
+                    "Content-Type": "application/json",
+                },
+            }
+        );
     }
 
     // Add current timestamp

@@ -27,7 +27,16 @@ import {
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { cn } from '../../src/lib/utils';
-import { getUserLeaderboardStats, type UserLeaderboardStats } from '../../src/lib/user-actions';
+import {
+    getUserLeaderboardStats,
+    getUserCategoryPerformance,
+    getUserRecentActivity,
+    getLeaderboardRankings,
+    type UserLeaderboardStats,
+    type CategoryPerformance,
+    type RecentActivity,
+    type LeaderboardPlayer
+} from '../../src/lib/user-actions';
 
 // Mock data for demonstration - will be replaced with API calls
 const mockUser = {
@@ -43,35 +52,6 @@ const mockUser = {
     totalScore: 12450,
 };
 
-const mockLeaderboard = [
-    { rank: 1, name: 'MapKing', score: 25800, avatar: null },
-    { rank: 2, name: 'GeoWizard', score: 24200, avatar: null },
-    { rank: 3, name: 'WorldExplorer', score: 22100, avatar: null },
-    { rank: 4, name: 'AtlasAce', score: 19850, avatar: null },
-    { rank: 5, name: 'CompassPro', score: 18600, avatar: null },
-    { rank: 6, name: 'TerraNova', score: 17200, avatar: null },
-    { rank: 7, name: 'GlobalGuru', score: 15900, avatar: null },
-    { rank: 8, name: 'EarthChamp', score: 14500, avatar: null },
-    { rank: 9, name: 'NationNinja', score: 13200, avatar: null },
-    { rank: 10, name: 'BorderBoss', score: 12800, avatar: null },
-];
-
-const mockCategoryScores = [
-    { id: 'capitals', name: 'Capitals', icon: Globe2, color: 'text-blue-400', score: 2450, accuracy: 92 },
-    { id: 'flags', name: 'Flag ID', icon: Flag, color: 'text-red-400', score: 2100, accuracy: 85 },
-    { id: 'locations', name: 'Map Pin', icon: MapPin, color: 'text-emerald-400', score: 1980, accuracy: 88 },
-    { id: 'comparisons', name: 'Stats War', icon: BarChart3, color: 'text-amber-400', score: 1750, accuracy: 82 },
-    { id: 'borders', name: 'Borders', icon: Milestone, color: 'text-purple-400', score: 2200, accuracy: 90 },
-    { id: 'features', name: 'Landmarks', icon: Mountain, color: 'text-cyan-400', score: 1970, accuracy: 86 },
-];
-
-const mockRecentActivity = [
-    { category: 'Capitals', score: 85, time: '2 hours ago', correct: 17, total: 20 },
-    { category: 'Flags', score: 70, time: '5 hours ago', correct: 14, total: 20 },
-    { category: 'Map Pin', score: 95, time: '1 day ago', correct: 19, total: 20 },
-    { category: 'Borders', score: 80, time: '2 days ago', correct: 16, total: 20 },
-];
-
 export default function ProfilePage() {
     const searchParams = useSearchParams();
     const { data: session, status } = useSession();
@@ -81,28 +61,64 @@ export default function ProfilePage() {
         tabParam === 'leaderboard' ? 'leaderboard' : 'stats'
     );
     const [userStats, setUserStats] = useState<UserLeaderboardStats | null>(null);
+    const [categoryPerformance, setCategoryPerformance] = useState<CategoryPerformance[]>([]);
+    const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+    const [leaderboard, setLeaderboard] = useState<LeaderboardPlayer[]>([]);
     const [statsLoading, setStatsLoading] = useState(false);
+    const [performanceLoading, setPerformanceLoading] = useState(false);
+    const [activityLoading, setActivityLoading] = useState(false);
+    const [leaderboardLoading, setLeaderboardLoading] = useState(false);
 
     // Update tab when URL changes
     useEffect(() => {
         setActiveTab(tabParam === 'leaderboard' ? 'leaderboard' : 'stats');
     }, [tabParam]);
 
-    // Fetch user stats when authenticated
+    // Fetch leaderboard (publicly available)
     useEffect(() => {
-        async function fetchStats() {
-            if (session?.user?.id) {
-                setStatsLoading(true);
-                try {
-                    const stats = await getUserLeaderboardStats(session.user.id);
-                    setUserStats(stats);
-                } catch (error) {
-                    console.error('Failed to fetch user stats:', error);
-                }
-                setStatsLoading(false);
+        async function fetchLeaderboard() {
+            setLeaderboardLoading(true);
+            try {
+                const data = await getLeaderboardRankings(10);
+                setLeaderboard(data);
+            } catch (err) {
+                console.error('Failed to fetch leaderboard rankings:', err);
+            } finally {
+                setLeaderboardLoading(false);
             }
         }
-        fetchStats();
+        fetchLeaderboard();
+    }, []);
+
+    // Fetch user stats when authenticated
+    useEffect(() => {
+        async function fetchAllData() {
+            if (session?.user?.id) {
+                const userId = session.user.id;
+
+                // Fetch basic stats
+                setStatsLoading(true);
+                getUserLeaderboardStats(userId)
+                    .then(stats => setUserStats(stats))
+                    .catch(err => console.error('Failed to fetch user stats:', err))
+                    .finally(() => setStatsLoading(false));
+
+                // Fetch category performance
+                setPerformanceLoading(true);
+                getUserCategoryPerformance(userId)
+                    .then(data => setCategoryPerformance(data))
+                    .catch(err => console.error('Failed to fetch category performance:', err))
+                    .finally(() => setPerformanceLoading(false));
+
+                // Fetch recent activity
+                setActivityLoading(true);
+                getUserRecentActivity(userId)
+                    .then(data => setRecentActivity(data))
+                    .catch(err => console.error('Failed to fetch recent activity:', err))
+                    .finally(() => setActivityLoading(false));
+            }
+        }
+        fetchAllData();
     }, [session?.user?.id]);
 
     return (
@@ -303,69 +319,130 @@ export default function ProfilePage() {
                                 {/* Category Scores Grid */}
                                 <section className="mb-12">
                                     <h2 className="text-2xl font-bold mb-6">Category Performance</h2>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {mockCategoryScores.map((cat) => {
-                                            const Icon = cat.icon;
-                                            return (
-                                                <div key={cat.id} className="glass-card rounded-2xl p-6 group">
+                                    {performanceLoading ? (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {[1, 2, 3].map((i) => (
+                                                <div key={i} className="glass-card rounded-2xl p-6 animate-pulse">
                                                     <div className="flex items-center justify-between mb-4">
-                                                        <div className={cn("p-3 rounded-xl bg-white/5 group-hover:scale-110 transition-transform", cat.color)}>
-                                                            <Icon className="w-6 h-6" />
-                                                        </div>
-                                                        <div className="text-right">
-                                                            <div className="text-xl font-bold">{cat.score.toLocaleString()}</div>
-                                                            <div className="text-xs text-text-secondary">points</div>
-                                                        </div>
+                                                        <div className="p-3 rounded-xl bg-white/5 w-12 h-12" />
+                                                        <div className="w-16 h-8 bg-white/5 rounded" />
                                                     </div>
-                                                    <h3 className="text-lg font-semibold mb-2">{cat.name}</h3>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
-                                                            <div
-                                                                className="h-full bg-gradient-to-r from-brand to-purple-500 rounded-full"
-                                                                style={{ width: `${cat.accuracy}%` }}
-                                                            />
-                                                        </div>
-                                                        <span className="text-sm text-text-secondary">{cat.accuracy}%</span>
-                                                    </div>
+                                                    <div className="w-24 h-6 bg-white/5 rounded mb-4" />
+                                                    <div className="h-2 bg-white/5 rounded-full" />
                                                 </div>
-                                            );
-                                        })}
-                                    </div>
+                                            ))}
+                                        </div>
+                                    ) : categoryPerformance.length > 0 ? (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {categoryPerformance.map((cat) => {
+                                                const iconMap: Record<string, any> = {
+                                                    capitals: Globe2,
+                                                    flags: Flag,
+                                                    locations: MapPin,
+                                                    comparisons: BarChart3,
+                                                    borders: Milestone,
+                                                    features: Mountain,
+                                                };
+                                                const colorMap: Record<string, string> = {
+                                                    capitals: 'text-blue-400',
+                                                    flags: 'text-red-400',
+                                                    locations: 'text-emerald-400',
+                                                    comparisons: 'text-amber-400',
+                                                    borders: 'text-purple-400',
+                                                    features: 'text-cyan-400',
+                                                };
+                                                const Icon = iconMap[cat.slug] || Star;
+                                                const color = colorMap[cat.slug] || 'text-brand';
+
+                                                return (
+                                                    <div key={cat.id} className="glass-card rounded-2xl p-6 group">
+                                                        <div className="flex items-center justify-between mb-4">
+                                                            <div className={cn("p-3 rounded-xl bg-white/5 group-hover:scale-110 transition-transform", color)}>
+                                                                <Icon className="w-6 h-6" />
+                                                            </div>
+                                                            <div className="text-right">
+                                                                <div className="text-xl font-bold">{cat.score.toLocaleString()}</div>
+                                                                <div className="text-xs text-text-secondary">points</div>
+                                                            </div>
+                                                        </div>
+                                                        <h3 className="text-lg font-semibold mb-2">{cat.name}</h3>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+                                                                <div
+                                                                    className="h-full bg-gradient-to-r from-brand to-purple-500 rounded-full"
+                                                                    style={{ width: `${cat.accuracy}%` }}
+                                                                />
+                                                            </div>
+                                                            <span className="text-sm text-text-secondary">{cat.accuracy}%</span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (
+                                        <div className="glass-card rounded-2xl p-12 text-center">
+                                            <p className="text-text-secondary">No category performance data available yet. Complete some quizzes to see your stats!</p>
+                                        </div>
+                                    )}
                                 </section>
 
                                 {/* Recent Activity */}
                                 <section>
                                     <h2 className="text-2xl font-bold mb-6">Recent Activity</h2>
-                                    <div className="glass-card rounded-2xl overflow-hidden">
-                                        {mockRecentActivity.map((activity, index) => (
-                                            <div
-                                                key={index}
-                                                className={cn(
-                                                    "flex items-center justify-between p-5",
-                                                    index !== mockRecentActivity.length - 1 && "border-b border-white/5"
-                                                )}
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
-                                                        <Star className="w-5 h-5 text-amber-400" />
+                                    {activityLoading ? (
+                                        <div className="glass-card rounded-2xl overflow-hidden divide-y divide-white/5">
+                                            {[1, 2, 3, 4].map((i) => (
+                                                <div key={i} className="p-5 flex items-center justify-between animate-pulse">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 rounded-xl bg-white/5" />
+                                                        <div className="space-y-2">
+                                                            <div className="w-32 h-4 bg-white/5 rounded" />
+                                                            <div className="w-20 h-3 bg-white/5 rounded" />
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <h4 className="font-semibold">{activity.category} Quiz</h4>
-                                                        <p className="text-sm text-text-secondary">
-                                                            {activity.correct}/{activity.total} correct
-                                                        </p>
+                                                    <div className="space-y-2 text-right">
+                                                        <div className="w-12 h-6 bg-white/5 rounded ml-auto" />
+                                                        <div className="w-16 h-3 bg-white/5 rounded ml-auto" />
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <div className="text-lg font-bold text-brand">{activity.score}%</div>
-                                                    <div className="text-xs text-text-secondary flex items-center gap-1 justify-end">
-                                                        <Clock className="w-3 h-3" />
-                                                        {activity.time}
+                                            ))}
+                                        </div>
+                                    ) : recentActivity.length > 0 ? (
+                                        <div className="glass-card rounded-2xl overflow-hidden">
+                                            {recentActivity.map((activity, index) => (
+                                                <div
+                                                    key={index}
+                                                    className={cn(
+                                                        "flex items-center justify-between p-5",
+                                                        index !== recentActivity.length - 1 && "border-b border-white/5"
+                                                    )}
+                                                >
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
+                                                            <Star className="w-5 h-5 text-amber-400" />
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="font-semibold">{activity.category} Quiz</h4>
+                                                            <p className="text-sm text-text-secondary">
+                                                                {activity.correct}/{activity.total} correct
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <div className="text-lg font-bold text-brand">{activity.score}%</div>
+                                                        <div className="text-xs text-text-secondary flex items-center gap-1 justify-end">
+                                                            <Clock className="w-3 h-3" />
+                                                            {activity.time}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="glass-card rounded-2xl p-12 text-center">
+                                            <p className="text-text-secondary">No recent activity. Start your first quiz exploration!</p>
+                                        </div>
+                                    )}
                                 </section>
                             </>
                         ) : (
@@ -404,54 +481,84 @@ export default function ProfilePage() {
 
                             {/* Leaderboard List */}
                             <div>
-                                {mockLeaderboard.map((player, index) => (
-                                    <div
-                                        key={player.rank}
-                                        className={cn(
-                                            "flex items-center gap-4 p-5 hover:bg-white/[0.02] transition-colors",
-                                            index !== mockLeaderboard.length - 1 && "border-b border-white/5",
-                                            player.rank <= 3 && "bg-gradient-to-r from-amber-500/5 to-transparent"
-                                        )}
-                                    >
-                                        {/* Rank */}
-                                        <div className={cn(
-                                            "w-10 h-10 rounded-xl flex items-center justify-center font-bold",
-                                            player.rank === 1 && "bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-lg",
-                                            player.rank === 2 && "bg-gradient-to-br from-slate-300 to-slate-500 text-white",
-                                            player.rank === 3 && "bg-gradient-to-br from-amber-600 to-amber-800 text-white",
-                                            player.rank > 3 && "bg-white/5 text-text-secondary"
-                                        )}>
-                                            {player.rank === 1 ? <Crown className="w-5 h-5" /> : player.rank}
-                                        </div>
-
-                                        {/* Avatar */}
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand/50 to-purple-500/50 flex items-center justify-center">
-                                            <User className="w-6 h-6 text-white/80" />
-                                        </div>
-
-                                        {/* Name */}
-                                        <div className="flex-1">
-                                            <h4 className="font-semibold">{player.name}</h4>
-                                            <p className="text-sm text-text-secondary">Top Player</p>
-                                        </div>
-
-                                        {/* Score */}
-                                        <div className="text-right">
-                                            <div className="text-lg font-bold">{player.score.toLocaleString()}</div>
-                                            <div className="text-xs text-text-secondary">points</div>
-                                        </div>
-
-                                        {/* Medal for top 3 */}
-                                        {player.rank <= 3 && (
-                                            <Award className={cn(
-                                                "w-6 h-6",
-                                                player.rank === 1 && "text-amber-400",
-                                                player.rank === 2 && "text-slate-400",
-                                                player.rank === 3 && "text-amber-600"
-                                            )} />
-                                        )}
+                                {leaderboardLoading ? (
+                                    /* Loading Skeleton */
+                                    <div className="divide-y divide-white/5">
+                                        {[1, 2, 3, 4, 5].map((i) => (
+                                            <div key={i} className="flex items-center gap-4 p-5 animate-pulse">
+                                                <div className="w-10 h-10 rounded-xl bg-white/5" />
+                                                <div className="w-12 h-12 rounded-xl bg-white/5" />
+                                                <div className="flex-1 space-y-2">
+                                                    <div className="w-32 h-4 bg-white/5 rounded" />
+                                                    <div className="w-20 h-3 bg-white/5 rounded" />
+                                                </div>
+                                                <div className="space-y-2 text-right">
+                                                    <div className="w-16 h-5 bg-white/5 rounded ml-auto" />
+                                                    <div className="w-12 h-3 bg-white/5 rounded ml-auto" />
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
+                                ) : leaderboard.length > 0 ? (
+                                    leaderboard.map((player, index) => (
+                                        <div
+                                            key={player.id}
+                                            className={cn(
+                                                "flex items-center gap-4 p-5 hover:bg-white/[0.02] transition-colors",
+                                                index !== leaderboard.length - 1 && "border-b border-white/5",
+                                                player.rank <= 3 && "bg-gradient-to-r from-amber-500/5 to-transparent"
+                                            )}
+                                        >
+                                            {/* Rank */}
+                                            <div className={cn(
+                                                "w-10 h-10 rounded-xl flex items-center justify-center font-bold",
+                                                player.rank === 1 && "bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-lg",
+                                                player.rank === 2 && "bg-gradient-to-br from-slate-300 to-slate-500 text-white",
+                                                player.rank === 3 && "bg-gradient-to-br from-amber-600 to-amber-800 text-white",
+                                                player.rank > 3 && "bg-white/5 text-text-secondary"
+                                            )}>
+                                                {player.rank === 1 ? <Crown className="w-5 h-5" /> : player.rank}
+                                            </div>
+
+                                            {/* Avatar */}
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand/50 to-purple-500/50 flex items-center justify-center overflow-hidden">
+                                                {player.avatar ? (
+                                                    <img src={player.avatar} alt={player.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <User className="w-6 h-6 text-white/80" />
+                                                )}
+                                            </div>
+
+                                            {/* Name */}
+                                            <div className="flex-1">
+                                                <h4 className="font-semibold">{player.name}</h4>
+                                                <p className="text-sm text-text-secondary">
+                                                    {player.rank === 1 ? 'Global Champion' : 'Geo Explorer'}
+                                                </p>
+                                            </div>
+
+                                            {/* Score */}
+                                            <div className="text-right">
+                                                <div className="text-lg font-bold">{player.score.toLocaleString()}</div>
+                                                <div className="text-xs text-text-secondary">points</div>
+                                            </div>
+
+                                            {/* Medal for top 3 */}
+                                            {player.rank <= 3 && (
+                                                <Award className={cn(
+                                                    "w-6 h-6",
+                                                    player.rank === 1 && "text-amber-400",
+                                                    player.rank === 2 && "text-slate-400",
+                                                    player.rank === 3 && "text-amber-600"
+                                                )} />
+                                            )}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="p-12 text-center text-text-secondary">
+                                        No ranking data available yet. Start playing to climb the board!
+                                    </div>
+                                )}
                             </div>
 
                             {/* Your Position - Only show when logged in */}
