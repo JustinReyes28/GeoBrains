@@ -40,5 +40,46 @@ export const capitalsData: CountryData[] = [
     { country: "South Africa", capital: "Pretoria", region: "Africa", lat: -25.7479, lng: 28.2293 }, // Executive capital
     { country: "Nigeria", capital: "Abuja", region: "Africa", lat: 9.0765, lng: 7.3986 },
     { country: "Kenya", capital: "Nairobi", region: "Africa", lat: -1.2921, lng: 36.8219 },
-    { country: "Morocco", capital: "Rabat", region: "Africa", lat: 34.0209, lng: -6.8416 }
+    { country: "Morocco", capital: "Rabat", region: "Africa", lat: 34.0209, lng: -6.8416 },
+    // European Additions
+    { country: "Austria", capital: "Vienna", region: "Europe", lat: 48.2082, lng: 16.3738 },
+    { country: "Switzerland", capital: "Bern", region: "Europe", lat: 46.9480, lng: 7.4474 },
+    { country: "Ireland", capital: "Dublin", region: "Europe", lat: 53.3498, lng: -6.2603 },
+    { country: "Hungary", capital: "Budapest", region: "Europe", lat: 47.4979, lng: 19.0402 },
+    { country: "Czech Republic", capital: "Prague", region: "Europe", lat: 50.0755, lng: 14.4378 },
+    { country: "Ukraine", capital: "Kyiv", region: "Europe", lat: 50.4501, lng: 30.5234 },
+    { country: "Turkey", capital: "Ankara", region: "Europe", lat: 39.9334, lng: 32.8597 },
+    { country: "Romania", capital: "Bucharest", region: "Europe", lat: 44.4268, lng: 26.1025 },
+    // Asian Additions
+    { country: "Pakistan", capital: "Islamabad", region: "Asia", lat: 33.6844, lng: 73.0479 },
+    { country: "Bangladesh", capital: "Dhaka", region: "Asia", lat: 23.8103, lng: 90.4125 },
+    { country: "Philippines", capital: "Manila", region: "Asia", lat: 14.5995, lng: 120.9842 },
+    { country: "Malaysia", capital: "Kuala Lumpur", region: "Asia", lat: 3.1390, lng: 101.6869 },
+    { country: "Singapore", capital: "Singapore", region: "Asia", lat: 1.3521, lng: 103.8198 },
+    { country: "Saudi Arabia", capital: "Riyadh", region: "Asia", lat: 24.7136, lng: 46.6753 },
+    { country: "Iran", capital: "Tehran", region: "Asia", lat: 35.6892, lng: 51.3890 },
+    { country: "Israel", capital: "Jerusalem", region: "Asia", lat: 31.7683, lng: 35.2137 },
+    { country: "UAE", capital: "Abu Dhabi", region: "Asia", lat: 24.4539, lng: 54.3773 },
+    // Americas Additions
+    { country: "Colombia", capital: "Bogotá", region: "Americas", lat: 4.7110, lng: -74.0721 },
+    { country: "Chile", capital: "Santiago", region: "Americas", lat: -33.4489, lng: -70.6693 },
+    { country: "Peru", capital: "Lima", region: "Americas", lat: -12.0464, lng: -77.0428 },
+    { country: "Venezuela", capital: "Caracas", region: "Americas", lat: 10.4806, lng: -66.9036 },
+    { country: "Cuba", capital: "Havana", region: "Americas", lat: 23.1136, lng: -82.3666 },
+    { country: "Jamaica", capital: "Kingston", region: "Americas", lat: 17.9714, lng: -76.7936 },
+    { country: "Panama", capital: "Panama city", capital_formatted: "Panama City", region: "Americas", lat: 8.9824, lng: -79.5199 },
+    { country: "Costa Rica", capital: "San José", region: "Americas", lat: 9.9281, lng: -84.0907 },
+    { country: "Guatemala", capital: "Guatemala City", region: "Americas", lat: 14.6349, lng: -90.5069 },
+    // Africa Additions
+    { country: "Ethiopia", capital: "Addis Ababa", region: "Africa", lat: 9.0300, lng: 38.7400 },
+    { country: "Ghana", capital: "Accra", region: "Africa", lat: 5.6037, lng: -0.1870 },
+    { country: "Ivory Coast", capital: "Yamoussoukro", region: "Africa", lat: 6.8276, lng: -5.2767 },
+    { country: "Tanzania", capital: "Dodoma", region: "Africa", lat: -6.1722, lng: 35.7481 },
+    { country: "Uganda", capital: "Kampala", region: "Africa", lat: 0.3476, lng: 32.5825 },
+    { country: "Algeria", capital: "Algiers", region: "Africa", lat: 36.7525, lng: 3.0420 },
+    { country: "Sudan", capital: "Khartoum", region: "Africa", lat: 15.5007, lng: 32.5599 },
+    { country: "Senegal", capital: "Dakar", region: "Africa", lat: 14.7167, lng: -17.4677 },
+    // Oceania Additions
+    { country: "Fiji", capital: "Suva", region: "Oceania", lat: -18.1248, lng: 178.4501 },
+    { country: "Papua New Guinea", capital: "Port Moresby", region: "Oceania", lat: -9.4438, lng: 147.1803 }
 ];
