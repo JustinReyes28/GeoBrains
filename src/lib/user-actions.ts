@@ -42,13 +42,13 @@ export async function getUserLeaderboardStats(userId: string): Promise<UserLeade
     try {
         // Get the current session to verify authorization
         const session = await auth();
-        
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
             console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access data for user ${maskUserId(userId)}`);
             return null;
         }
-        
+
         // Get the user's basic info including createdAt for join date
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -93,10 +93,22 @@ export async function getUserLeaderboardStats(userId: string): Promise<UserLeade
             _sum: { value: true },
         });
 
-        // Convert rank from bigint to Number, fallback to total users + 1 if no scores
-        const rank = rankResult.length > 0 && rankResult[0].rank 
-            ? Number(rankResult[0].rank)
-            : totalUsersResult.length + 1;
+        // Calculate count of users with higher scores for alternative ranking
+        interface HigherScoresCount {
+            count: bigint;
+        }
+
+        const higherScoresCount = await prisma.$queryRaw<HigherScoresCount[]>(
+            Prisma.sql`
+                SELECT COUNT(DISTINCT "userId") as count
+                FROM "Score"
+                GROUP BY "userId"
+                HAVING SUM(value) > ${userTotalScore}
+            `
+        );
+
+        // Calculate rank: count of users with higher scores + 1
+        const rank = (higherScoresCount.length > 0 ? Number(higherScoresCount[0].count) : 0) + 1;
 
         // Format join date (e.g., "December 2024")
         const joinDate = user.createdAt.toLocaleDateString('en-US', {
@@ -134,13 +146,13 @@ export async function getUserCategoryPerformance(userId: string): Promise<Catego
     try {
         // Get the current session to verify authorization
         const session = await auth();
-        
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
             console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access category performance for user ${maskUserId(userId)}`);
             return [];
         }
-        
+
         // Fetch all categories and user's scores in parallel to avoid N+1 queries
         const [categories, userScores] = await Promise.all([
             prisma.quizCategory.findMany(),
@@ -197,13 +209,13 @@ export async function getUserRecentActivity(userId: string, limit = 4): Promise<
     try {
         // Get the current session to verify authorization
         const session = await auth();
-        
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
             console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access recent activity for user ${maskUserId(userId)}`);
             return [];
         }
-        
+
         const recentScores = await prisma.score.findMany({
             where: { userId },
             include: { category: true },
