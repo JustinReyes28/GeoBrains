@@ -29,5 +29,6 @@ export function calculatePoints(distanceKm: number): { points: number; feedback:
     if (distanceKm < 500) return { points: 500, feedback: "👍 Great!", color: "text-blue-400" };
     if (distanceKm < 1000) return { points: 250, feedback: "😅 Close!", color: "text-amber-400" };
     if (distanceKm < 2000) return { points: 100, feedback: "🌍 Keep trying!", color: "text-orange-400" };
+    if (distanceKm < 5000) return { points: 50, feedback: "💔 Unacceptable!", color: "text-red-400" };
     return { points: 0, feedback: "❌ Too far!", color: "text-red-400" };
 }
