@@ -32,7 +32,7 @@ const categories = [
     { id: 'flags', name: 'Flag ID', icon: Flag, color: 'text-red-400', desc: 'Name countries by their flags' },
     { id: 'locations', name: 'Map Pin', icon: MapPin, color: 'text-emerald-400', desc: 'Find countries on the map', href: '/map-pin-quiz' },
     { id: 'comparisons', name: 'Stats War', icon: BarChart3, color: 'text-amber-400', desc: 'Compare population & area' },
-    { id: 'borders', name: 'Borders', icon: Milestone, color: 'text-purple-400', desc: 'Neighboring countries' },
+    { id: 'borders', name: 'Borders', icon: Milestone, color: 'text-purple-400', desc: 'Neighboring countries', href: '/borders-quiz' },
     { id: 'features', name: 'Landmarks', icon: Mountain, color: 'text-cyan-400', desc: 'Geographic wonders' },
 ];
 
