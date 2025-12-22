@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -37,7 +38,20 @@ const categories = [
 ];
 
 export default function Home() {
+    const router = useRouter();
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+    const handleQuickPlay = () => {
+        // Filter categories that have an href (are implemented)
+        const availableQuizzes = categories.filter(cat => cat.href);
+
+        if (availableQuizzes.length > 0) {
+            const randomQuiz = availableQuizzes[Math.floor(Math.random() * availableQuizzes.length)];
+            if (randomQuiz.href) {
+                router.push(randomQuiz.href);
+            }
+        }
+    };
 
     return (
         <div className="min-h-screen bg-bg-primary text-text-primary selection:bg-brand/30">
@@ -80,12 +94,15 @@ export default function Home() {
                             </p>
 
                             <div className="flex flex-wrap gap-4 pt-4">
-                                <button className="px-8 py-4 rounded-xl bg-brand text-white font-bold shadow-xl shadow-brand/20 hover:scale-[1.02] transition-transform active:scale-95">
+                                <button
+                                    onClick={handleQuickPlay}
+                                    className="px-8 py-4 rounded-xl bg-brand text-white font-bold shadow-xl shadow-brand/20 hover:scale-[1.02] transition-transform active:scale-95"
+                                >
                                     Quick Play
                                 </button>
-                                <button className="px-8 py-4 rounded-xl glass-card font-bold hover:scale-[1.02] transition-transform active:scale-95">
-                                    Browse Quizzes
-                                </button>
+                                <Link href="https://github.com/JustinReyes28/GeoBrains" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl glass-card font-bold hover:scale-[1.02] transition-transform active:scale-95">
+                                    Explore the code
+                                </Link>
                             </div>
                         </div>
 
@@ -104,11 +121,6 @@ export default function Home() {
                         <div>
                             <h2 className="text-3xl font-bold mb-2">Quiz Categories</h2>
                             <p className="text-text-secondary">Select a mode to earn your rank</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <button className="p-2 rounded-lg glass-card text-text-secondary hover:text-text-primary">
-                                <History className="w-5 h-5" />
-                            </button>
                         </div>
                     </div>
 
