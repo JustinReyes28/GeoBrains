@@ -3,7 +3,7 @@
 Welcome, Agent. This document provides essential context and instructions for collaborating on the GeoBrains project.
 
 ## 🚀 Project Overview
-GeoBrains is a premium geography quiz application built with Next.js. It features an interactive map-based quiz experience, user authentication, and global leaderboards.
+GeoBrains is a premium geography quiz application. Originally started as a hybrid, it is now a **pure Next.js** application. I have successfully removed all legacy Vite artifacts and transitioned completely to the Next.js ecosystem for a more streamlined development and production experience. It features interactive map-based quizzes, secure user authentication with email verification, and global leaderboards.
 
 ## 🛠 Tech Stack
 - **Framework**: [Next.js 16+ (App Router)](https://nextjs.org/docs)
@@ -16,7 +16,8 @@ GeoBrains is a premium geography quiz application built with Next.js. It feature
 - **Database & ORM**: 
   - [Prisma v7+](https://www.prisma.io/)
   - [PostgreSQL](https://www.postgresql.org/) (hosted on Neon/Vercel)
-- **Email Service**: [Nodemailer](https://nodemailer.com/) with Google SMTP
+- **Email Service**: [Nodemailer](https://nodemailer.com/) using Google SMTP (migrated from Resend)
+- **Email Verification**: 6-digit numeric code system with a 10-minute expiration
 - **Authentication**: [NextAuth.js (Auth.js) v5 Beta](https://authjs.dev/)
 - **Validation**: [Zod](https://zod.dev/) & [React Hook Form](https://react-hook-form.com/)
 
@@ -38,6 +39,7 @@ GeoBrains is a premium geography quiz application built with Next.js. It feature
 - **Server Components**: Prefer Server Components for data fetching where possible.
 - **Component Structure**: Keep components small and focused. Use `tailwind-merge` and `clsx` for dynamic classes.
 - **Security**: Always validate inputs with Zod. Use secure hashing (bcryptjs) for passwords.
+- **Next.js Conventions**: Follow the App Router conventions. Wrap client components using `useSearchParams` in `<Suspense>` boundaries to avoid build-time errors.
 
 ## 🛡️ Critical Security Requirements
 
