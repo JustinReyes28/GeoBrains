@@ -4,6 +4,7 @@ export interface CountryData {
     region: string;
     lat?: number;
     lng?: number; // Approximate capital coordinates
+    capital_formatted?: string;
 }
 
 export const capitalsData: CountryData[] = [

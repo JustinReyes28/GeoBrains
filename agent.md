@@ -16,6 +16,7 @@ GeoBrains is a premium geography quiz application built with Next.js. It feature
 - **Database & ORM**: 
   - [Prisma v7+](https://www.prisma.io/)
   - [PostgreSQL](https://www.postgresql.org/) (hosted on Neon/Vercel)
+- **Email Service**: [Nodemailer](https://nodemailer.com/) with Google SMTP
 - **Authentication**: [NextAuth.js (Auth.js) v5 Beta](https://authjs.dev/)
 - **Validation**: [Zod](https://zod.dev/) & [React Hook Form](https://react-hook-form.com/)
 

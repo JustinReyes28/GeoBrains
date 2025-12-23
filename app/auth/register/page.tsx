@@ -41,10 +41,10 @@ export default function RegisterPage() {
 
                     if (data.success) {
                         setSuccess(data.success);
-                        // Optional: redirect to login after short delay
+                        // Redirect to verification page
                         setTimeout(() => {
-                            router.push("/auth/login");
-                        }, 2000);
+                            router.push(`/auth/verify-email?email=${values.email}`);
+                        }, 1000);
                     }
                 })
                 .catch((error: unknown) => {
