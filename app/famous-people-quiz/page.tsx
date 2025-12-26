@@ -13,6 +13,7 @@ interface Question {
     correctAnswer: string;
     options: string[];
     region: string;
+    imageUrl?: string;
 }
 
 export default function FamousPeopleQuizPage() {
@@ -145,13 +146,34 @@ export default function FamousPeopleQuizPage() {
                         <div className="absolute top-0 right-0 p-4 opacity-10">
                             <User className="w-32 h-32" />
                         </div>
-                        <h2 className="text-sm uppercase tracking-wider text-text-secondary mb-2 font-semibold">Which country is this person from?</h2>
-                        <h1 className="text-3xl font-black text-white mb-2 leading-tight">
-                            {currentQ.person}
-                        </h1>
-                        <p className="text-text-secondary italic mb-8">
-                            "{currentQ.description}"
-                        </p>
+
+                        <div className="flex flex-col items-center mb-8">
+                            <div className="relative w-48 h-48 mb-6 group">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                                <div className="relative w-full h-full rounded-2xl overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
+                                    {currentQ.imageUrl ? (
+                                        <img
+                                            src={currentQ.imageUrl}
+                                            alt={currentQ.person}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).src = `https://placehold.co/400x400/png?text=${encodeURIComponent(currentQ.person)}`;
+                                            }}
+                                        />
+                                    ) : (
+                                        <User className="w-20 h-20 text-white/20" />
+                                    )}
+                                </div>
+                            </div>
+
+                            <h2 className="text-sm uppercase tracking-wider text-text-secondary mb-2 font-semibold">Which country is this person from?</h2>
+                            <h1 className="text-3xl font-black text-white mb-2 leading-tight text-center">
+                                {currentQ.person}
+                            </h1>
+                            <p className="text-text-secondary italic text-center max-w-lg">
+                                "{currentQ.description}"
+                            </p>
+                        </div>
 
                         <div className="grid grid-cols-1 gap-3">
                             {currentQ.options.map((option) => {

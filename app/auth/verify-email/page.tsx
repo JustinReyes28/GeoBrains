@@ -4,9 +4,10 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { verifyEmail, resendVerificationCode } from "@/src/lib/auth-actions";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
     const [error, setError] = useState<string | undefined>();
     const [success, setSuccess] = useState<string | undefined>();
     const [isPending, startTransition] = useTransition();
@@ -176,5 +177,17 @@ export default function VerifyEmailPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-bg-primary">
+                <Loader2 className="w-8 h-8 animate-spin text-brand" />
+            </div>
+        }>
+            <VerifyEmailContent />
+        </Suspense>
     );
 }

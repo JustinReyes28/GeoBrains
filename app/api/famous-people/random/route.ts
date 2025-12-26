@@ -27,7 +27,8 @@ export async function GET(request: Request) {
             description: item.description,
             correctAnswer: item.country,
             options: options,
-            region: item.region
+            region: item.region,
+            imageUrl: item.imageUrl
         };
     });
 
