@@ -14,7 +14,9 @@ import {
     Trophy,
     History,
     TrendingUp,
-    User
+    User,
+    Languages,
+    Coins
 } from 'lucide-react';
 import { cn } from '../src/lib/utils';
 
@@ -35,6 +37,9 @@ const categories = [
     { id: 'comparisons', name: 'Stats War', icon: BarChart3, color: 'text-amber-400', desc: 'Compare population & area', href: '/stats-war' },
     { id: 'borders', name: 'Borders', icon: Milestone, color: 'text-purple-400', desc: 'Neighboring countries', href: '/borders-quiz' },
     { id: 'features', name: 'Landmarks', icon: Mountain, color: 'text-cyan-400', desc: 'Geographic wonders', href: '/landmarks-quiz' },
+    { id: 'languages', name: 'Languages Quiz', icon: Languages, color: 'text-blue-400', desc: 'World languages', href: '/languages-quiz' },
+    { id: 'currencies', name: 'Currencies Quiz', icon: Coins, color: 'text-emerald-400', desc: 'Global currencies', href: '/currencies-quiz' },
+    { id: 'famous-people', name: 'Famous People', icon: User, color: 'text-amber-400', desc: 'Historical figures', href: '/famous-people-quiz' },
 ];
 
 export default function Home() {
