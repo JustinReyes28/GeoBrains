@@ -20,7 +20,7 @@ export const landmarksData: LandmarkData[] = [
         country: "India",
         city: "Agra",
         region: "Asia",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Taj-Mahal.jpeg",
         coordinates: { lat: 27.1751, lng: 78.0421 }
     },
     {
@@ -29,7 +29,7 @@ export const landmarksData: LandmarkData[] = [
         country: "China",
         city: "Beijing",
         region: "Asia",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/great-wall-china.jpg",
         coordinates: { lat: 40.4319, lng: 116.5704 }
     },
     {
@@ -38,7 +38,7 @@ export const landmarksData: LandmarkData[] = [
         country: "France",
         city: "Paris",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Eiffel-Tower.webp",
         coordinates: { lat: 48.8584, lng: 2.2945 }
     },
     {
@@ -47,7 +47,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Italy",
         city: "Rome",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/colosseum.jpg",
         coordinates: { lat: 41.8902, lng: 12.4922 }
     },
     {
@@ -56,7 +56,7 @@ export const landmarksData: LandmarkData[] = [
         country: "USA",
         city: "New York",
         region: "Americas",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Statue-of-liberty.jpg",
         coordinates: { lat: 40.6892, lng: -74.0445 }
     },
     {
@@ -65,7 +65,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Peru",
         city: "Cusco Region",
         region: "Americas",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Machu-Picchu.jpg",
         coordinates: { lat: -13.1631, lng: -72.5450 }
     },
     {
@@ -74,7 +74,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Brazil",
         city: "Rio de Janeiro",
         region: "Americas",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/christ-the-redeemer.jpg",
         coordinates: { lat: -22.9519, lng: -43.2105 }
     },
     {
@@ -83,7 +83,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Australia",
         city: "Sydney",
         region: "Oceania",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/sydney opera house.jpg",
         coordinates: { lat: -33.8568, lng: 151.2153 }
     },
     {
@@ -92,7 +92,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Egypt",
         city: "Giza",
         region: "Africa",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Giza Pyramid.jpg",
         coordinates: { lat: 29.9792, lng: 31.1342 }
     },
     {
@@ -101,7 +101,7 @@ export const landmarksData: LandmarkData[] = [
         country: "United Kingdom",
         city: "London",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/big ben.jpg",
         coordinates: { lat: 51.5007, lng: -0.1246 }
     },
     {
@@ -110,7 +110,7 @@ export const landmarksData: LandmarkData[] = [
         country: "UAE",
         city: "Dubai",
         region: "Asia",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/burj khalifa.jpg",
         coordinates: { lat: 25.1972, lng: 55.2744 }
     },
     {
@@ -119,7 +119,7 @@ export const landmarksData: LandmarkData[] = [
         country: "USA",
         city: "San Francisco",
         region: "Americas",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/golden gate bridge.jpg",
         coordinates: { lat: 37.8199, lng: -122.4783 }
     },
     {
@@ -128,7 +128,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Japan",
         city: "Honshu",
         region: "Asia",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/mount fuji.jpg",
         coordinates: { lat: 35.3606, lng: 138.7274 }
     },
     {
@@ -137,7 +137,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Greece",
         city: "Santorini",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/santorini.jpg",
         coordinates: { lat: 36.3932, lng: 25.4615 }
     },
     {
@@ -146,7 +146,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Cambodia",
         city: "Siem Reap",
         region: "Asia",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Angkor Wat.jpg",
         coordinates: { lat: 13.4125, lng: 103.8670 }
     },
     {
@@ -155,7 +155,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Jordan",
         city: "Ma'an",
         region: "Asia",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Petra.jpg",
         coordinates: { lat: 30.3285, lng: 35.4444 }
     },
     {
@@ -164,7 +164,7 @@ export const landmarksData: LandmarkData[] = [
         country: "United Kingdom",
         city: "Wiltshire",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Stonehenge.jpg",
         coordinates: { lat: 51.1789, lng: -1.8262 }
     },
     {
@@ -173,7 +173,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Italy",
         city: "Pisa",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/leaning-tower-pisa.jpg",
         coordinates: { lat: 43.7230, lng: 10.3966 }
     },
     {
@@ -182,7 +182,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Spain",
         city: "Barcelona",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Sagrada Familia.jpg",
         coordinates: { lat: 41.4036, lng: 2.1744 }
     },
     {
@@ -191,7 +191,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Germany",
         city: "Berlin",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Brandenburg Gate.jpg",
         coordinates: { lat: 52.5163, lng: 13.3777 }
     },
     {
@@ -200,7 +200,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Germany",
         city: "Schwangau",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Neuschwanstein Castle.jpg",
         coordinates: { lat: 47.5576, lng: 10.7498 }
     },
     {
@@ -209,7 +209,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Mexico",
         city: "Yucatan",
         region: "Americas",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Chichen Itza.jpg",
         coordinates: { lat: 20.6843, lng: -88.5678 }
     },
     {
@@ -218,7 +218,7 @@ export const landmarksData: LandmarkData[] = [
         country: "USA/Canada",
         city: "Ontario/New York",
         region: "Americas",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Niagara Falls.jpg",
         coordinates: { lat: 43.0962, lng: -79.0377 }
     },
     {
@@ -227,7 +227,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Zambia/Zimbabwe",
         city: "Livingstone",
         region: "Africa",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Victoria Falls.jpg",
         coordinates: { lat: -17.9243, lng: 25.8572 }
     },
     {
@@ -236,7 +236,7 @@ export const landmarksData: LandmarkData[] = [
         country: "South Africa",
         city: "Cape Town",
         region: "Africa",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Table Mountain.jpg",
         coordinates: { lat: -33.9628, lng: 18.4098 }
     },
     {
@@ -245,7 +245,7 @@ export const landmarksData: LandmarkData[] = [
         country: "USA",
         city: "South Dakota",
         region: "Americas",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Mount Rushmore.jpg",
         coordinates: { lat: 43.8791, lng: -103.4591 }
     },
     {
@@ -254,7 +254,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Greece",
         city: "Athens",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Acropolis.jpg",
         coordinates: { lat: 37.9715, lng: 23.7257 }
     },
     {
@@ -263,7 +263,7 @@ export const landmarksData: LandmarkData[] = [
         country: "Turkey",
         city: "Istanbul",
         region: "Asia",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Hagia Sophia.jpg",
         coordinates: { lat: 41.0086, lng: 28.9802 }
     },
     {
@@ -272,7 +272,7 @@ export const landmarksData: LandmarkData[] = [
         country: "United Kingdom",
         city: "London",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Tower Bridge.jpg",
         coordinates: { lat: 51.5055, lng: -0.0754 }
     },
     {
@@ -281,7 +281,7 @@ export const landmarksData: LandmarkData[] = [
         country: "France",
         city: "Paris",
         region: "Europe",
-        imagePath: PLACEHOLDER_IMAGE,
+        imagePath: "/landmarks/Arc de Triomphe.jpg",
         coordinates: { lat: 48.8738, lng: 2.2950 }
     }
 ];
