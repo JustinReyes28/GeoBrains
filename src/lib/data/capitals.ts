@@ -82,5 +82,15 @@ export const capitalsData: CountryData[] = [
     { country: "Senegal", capital: "Dakar", region: "Africa", lat: 14.7167, lng: -17.4677 },
     // Oceania Additions
     { country: "Fiji", capital: "Suva", region: "Oceania", lat: -18.1248, lng: 178.4501 },
-    { country: "Papua New Guinea", capital: "Port Moresby", region: "Oceania", lat: -9.4438, lng: 147.1803 }
+    { country: "Papua New Guinea", capital: "Port Moresby", region: "Oceania", lat: -9.4438, lng: 147.1803 },
+    { country: "Samoa", capital: "Apia", region: "Oceania", lat: -13.85, lng: -171.75 },
+    { country: "Tonga", capital: "Nuku'alofa", region: "Oceania", lat: -21.13, lng: -175.2 },
+    { country: "Vanuatu", capital: "Port Vila", region: "Oceania", lat: -17.73, lng: 168.32 },
+    { country: "Solomon Islands", capital: "Honiara", region: "Oceania", lat: -9.43, lng: 159.95 },
+    { country: "Kiribati", capital: "South Tarawa", region: "Oceania", lat: 1.33, lng: 173.02 },
+    { country: "Micronesia", capital: "Palikir", region: "Oceania", lat: 6.92, lng: 158.15 },
+    { country: "Marshall Islands", capital: "Majuro", region: "Oceania", lat: 7.09, lng: 171.38 },
+    { country: "Tuvalu", capital: "Funafuti", region: "Oceania", lat: -8.52, lng: 179.22 },
+    { country: "Nauru", capital: "Yaren", region: "Oceania", lat: -0.55, lng: 166.92 },
+    { country: "Palau", capital: "Ngerulmud", region: "Oceania", lat: 7.5, lng: 134.62 }
 ];
