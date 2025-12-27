@@ -37,6 +37,7 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+.env.example
 
 # IDE / editor folders
 .idea/
@@ -73,4 +74,8 @@ tsconfig.tsbuildinfo
 .next/trace-build/*
 
 # Next.js diagnostics
-.next/diagnostics/*
+
+# Local-only folder
+private/
+prisma/seed.ts
+scripts/migrate-via-api.js

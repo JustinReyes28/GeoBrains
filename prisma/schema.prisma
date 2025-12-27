@@ -10,6 +10,11 @@ datasource db {
 // Auth.js Models (Required for Authentication)
 // ==========================================
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id                String    @id @default(cuid())
   name              String?
@@ -17,6 +22,7 @@ model User {
   emailVerified     DateTime?
   image             String?
   password          String?   // For credentials auth (hashed)
+  role              Role      @default(USER)
   
   // Security fields for brute-force protection
   failedAttemptCount Int      @default(0)
@@ -119,4 +125,63 @@ model Score {
   createdAt     DateTime     @default(now())
 
   @@index([categoryId, value(sort: Desc)]) // Optimized for leaderboard
+}
+
+// ==========================================
+// Admin Panel Models
+// ==========================================
+
+model Country {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  code      String    @unique // ISO 2-letter code
+  region    String
+  centerLat Float
+  centerLng Float
+  
+  capitals  Capital[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Capital {
+  id        String   @id @default(cuid())
+  name      String
+  countryId String   @unique // One capital per country
+  country   Country  @relation(fields: [countryId], references: [id])
+}
+
+model FamousPerson {
+  id          String   @id @default(cuid())
+  name        String
+  country     String
+  description String
+  region      String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+}
+
+model Landmark {
+  id          String   @id @default(cuid())
+  name        String
+  country     String
+  description String?
+  imageUrl    String?
+  hints       String[]
+  createdAt   DateTime @default(now())
+}
+
+model Currency {
+  id        String   @id @default(cuid())
+  name      String
+  symbol    String
+  country   String
+  createdAt DateTime @default(now())
+}
+
+model Language {
+  id        String   @id @default(cuid())
+  name      String
+  country   String
+  createdAt DateTime @default(now())
 }

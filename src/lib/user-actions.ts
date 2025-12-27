@@ -43,9 +43,12 @@ export async function getUserLeaderboardStats(userId: string): Promise<UserLeade
         // Get the current session to verify authorization
         const session = await auth();
 
+        // Add debug logging
+        console.log(`[getUserLeaderboardStats] Requested userId: ${maskUserId(userId)}, Session userId: ${maskUserId(session?.user?.id)}`);
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
-            console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access data for user ${maskUserId(userId)}`);
+            console.warn(`Unauthorized access attempt in getUserLeaderboardStats: session user ${maskUserId(session?.user?.id)} tried to access data for user ${maskUserId(userId)}`);
             return null;
         }
 
@@ -127,9 +130,12 @@ export async function getUserCategoryPerformance(userId: string): Promise<Catego
         // Get the current session to verify authorization
         const session = await auth();
 
+        // Add debug logging
+        console.log(`[getUserCategoryPerformance] Requested userId: ${maskUserId(userId)}, Session userId: ${maskUserId(session?.user?.id)}`);
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
-            console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access category performance for user ${maskUserId(userId)}`);
+            console.warn(`Unauthorized access attempt in getUserCategoryPerformance: session user ${maskUserId(session?.user?.id)} tried to access category performance for user ${maskUserId(userId)}`);
             return [];
         }
 
@@ -190,9 +196,12 @@ export async function getUserRecentActivity(userId: string, limit = 4): Promise<
         // Get the current session to verify authorization
         const session = await auth();
 
+        // Add debug logging
+        console.log(`[getUserRecentActivity] Requested userId: ${maskUserId(userId)}, Session userId: ${maskUserId(session?.user?.id)}`);
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
-            console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access recent activity for user ${maskUserId(userId)}`);
+            console.warn(`Unauthorized access attempt in getUserRecentActivity: session user ${maskUserId(session?.user?.id)} tried to access recent activity for user ${maskUserId(userId)}`);
             return [];
         }
 

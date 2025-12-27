@@ -87,7 +87,7 @@ export default function Home() {
                     <div className="flex flex-col lg:flex-row gap-12 items-center">
                         <div className="flex-1 space-y-6">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel border border-brand/20 text-xs font-semibold text-brand tracking-wide uppercase">
-                                <TrendingUp className="w-3 h-3" /> New Daily Challenges Added
+                                <TrendingUp className="w-3 h-3" /> New Challenges are Added Everyday
                             </div>
                             <h1 className="text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight">
                                 Master the <br />

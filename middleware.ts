@@ -162,6 +162,21 @@ async function consolidatedMiddlewareHandler(req: any) {
         );
     }
 
+    // Admin Route Protection
+    const isAdminRoute = nextUrl.pathname.startsWith("/admin");
+    if (isAdminRoute) {
+        // 1. Must be logged in
+        if (!isLoggedIn) {
+            return Response.redirect(new URL("/auth/login", nextUrl));
+        }
+
+        // 2. Must be the admin user (Email Check)
+        // Note: Middleware can't easily check DB role without edge adapter, so we rely on email env var here for speed
+        if (req.auth?.user?.email !== process.env.ADMIN_EMAIL) {
+            return Response.redirect(new URL("/", nextUrl));
+        }
+    }
+
     // Continue with the request if no special handling is needed
     return NextResponse.next();
 }
