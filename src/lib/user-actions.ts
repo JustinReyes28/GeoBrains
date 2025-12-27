@@ -304,7 +304,8 @@ export async function recordQuizScore(
     score: number,
     totalQuestions: number,
     categorySlug: string,
-    timeInSeconds: number = 0
+    timeInSeconds: number = 0,
+    isRawValue: boolean = false
 ) {
     try {
         const session = await auth();
@@ -313,7 +314,7 @@ export async function recordQuizScore(
         }
 
         const userId = session.user.id;
-        const percentageScore = Math.round((score / totalQuestions) * 100);
+        const value = isRawValue ? score : Math.round((score / totalQuestions) * 100);
 
         // Ensure the category exists
         const category = await prisma.quizCategory.upsert({
@@ -330,7 +331,7 @@ export async function recordQuizScore(
             data: {
                 userId,
                 categoryId: category.id,
-                value: percentageScore,
+                value,
                 timeInSeconds,
             }
         });
@@ -339,5 +340,39 @@ export async function recordQuizScore(
     } catch (error) {
         console.error("Error recording quiz score:", error);
         return { success: false, error: "Internal Server Error" };
+    }
+}
+
+/**
+ * Fetches the highest score for a specific category for the current user.
+ */
+export async function getCategoryHighScore(categorySlug: string): Promise<number> {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) return 0;
+
+        const userId = session.user.id;
+
+        const category = await prisma.quizCategory.findUnique({
+            where: { slug: categorySlug },
+            select: { id: true }
+        });
+
+        if (!category) return 0;
+
+        const maxScore = await prisma.score.aggregate({
+            where: {
+                userId,
+                categoryId: category.id
+            },
+            _max: {
+                value: true
+            }
+        });
+
+        return maxScore._max.value ?? 0;
+    } catch (error) {
+        console.error("Error fetching category high score:", error);
+        return 0;
     }
 }

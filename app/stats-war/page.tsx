@@ -14,7 +14,7 @@ import {
     Maximize2
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
-import { recordQuizScore } from '@/src/lib/user-actions';
+import { recordQuizScore, getCategoryHighScore } from '@/src/lib/user-actions';
 
 interface StatQuestion {
     id: string;
@@ -45,7 +45,13 @@ export default function StatsWarPage() {
 
     useEffect(() => {
         fetchQuestions();
+        loadHighScore();
     }, []);
+
+    const loadHighScore = async () => {
+        const hScore = await getCategoryHighScore('stats-war');
+        setHighScore(hScore);
+    };
 
     const fetchQuestions = async () => {
         try {
@@ -92,7 +98,11 @@ export default function StatsWarPage() {
 
     const recordScore = async () => {
         try {
-            await recordQuizScore(score, questions.length, 'stats-war');
+            await recordQuizScore(score, questions.length, 'stats-war', 0, true);
+            // Refresh high score display
+            if (score > highScore) {
+                setHighScore(score);
+            }
         } catch (error) {
             console.error("Failed to record score:", error);
         }
