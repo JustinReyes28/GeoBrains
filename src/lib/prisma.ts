@@ -4,7 +4,12 @@ import pg from 'pg'
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
-const connectionString = `${process.env.POSTGRES_PRISMA_URL}`
+const connectionString = process.env.POSTGRES_PRISMA_URL
+
+if (!connectionString) {
+    throw new Error('Missing POSTGRES_PRISMA_URL environment variable')
+}
+
 const pool = new pg.Pool({ connectionString })
 const adapter = new PrismaPg(pool)
 
