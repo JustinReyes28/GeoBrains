@@ -1,15 +1,18 @@
 import { PrismaClient } from "@prisma/client";
-import { countriesData } from "../src/lib/data/countries";
-import { capitalsData } from "../src/lib/data/capitals";
-import { famousPeopleData } from "../src/lib/data/famous_people";
-import { landmarksData } from "../src/lib/data/landmarks";
-import { currenciesData } from "../src/lib/data/currencies";
-import { languagesData } from "../src/lib/data/languages";
 
 const prisma = new PrismaClient();
 
 async function main() {
     console.log("Starting data migration...");
+
+    // Dynamically import data to avoid TS compilation issues in Node/MJS
+    // Note: This script should be run with `npx tsx prisma/migrate-data.mjs`
+    const { countriesData } = await import("../src/lib/data/countries.ts");
+    const { capitalsData } = await import("../src/lib/data/capitals.ts");
+    const { famousPeopleData } = await import("../src/lib/data/famous_people.ts");
+    const { landmarksData } = await import("../src/lib/data/landmarks.ts");
+    const { currenciesData } = await import("../src/lib/data/currencies.ts");
+    const { languagesData } = await import("../src/lib/data/languages.ts");
 
     // 1. Countries
     console.log(`Migrating ${countriesData.length} countries...`);
@@ -33,7 +36,7 @@ async function main() {
             });
         } catch (error) {
             console.error(`Failed to migrate country: ${country.name}`, error);
-            throw error; // Re-throw to stop
+            throw error;
         }
     }
 
@@ -55,35 +58,33 @@ async function main() {
                     countryId: country.id
                 }
             });
-        } else {
-            console.warn(`Country not found for capital: ${capital.capital} (${capital.country})`);
         }
     }
 
     // 3. Famous People
     console.log(`Migrating ${famousPeopleData.length} famous people...`);
     for (const person of famousPeopleData) {
-        await prisma.famousPerson.create({
-            data: {
-                name: person.person, // person field in TS -> name in DB
-                country: person.country,
-                description: person.description,
-                region: person.region,
-                imageUrl: person.imageUrl
-            }
+        // Check existence to prevent duplicates
+        const existing = await prisma.famousPerson.findFirst({
+            where: { name: person.person, country: person.country }
         });
+
+        if (!existing) {
+            await prisma.famousPerson.create({
+                data: {
+                    name: person.person,
+                    country: person.country,
+                    description: person.description,
+                    region: person.region,
+                    imageUrl: person.imageUrl
+                }
+            });
+        }
     }
 
     // 4. Landmarks
     console.log(`Migrating ${landmarksData.length} landmarks...`);
     for (const landmark of landmarksData) {
-        // Landmarks data might have duplicates if we run this multiple times, so ideally upsert or just create.
-        // There is no unique key on landmark name in schema, but for migration safety let's use check-then-create or delete-all-first.
-        // Since we are migrating fresh, let's just create. Or actually, upserting by ID would be safest if we kept ID.
-        // But schema ID is CUID. So we will just CREATE. To allow re-runs, maybe findMany first?
-        // Let's assume unique name+country for now? No, simple CREATE is fine for one-off.
-
-        // Actually, to prevent duplicates on multiple runs, let's check existence.
         const existing = await prisma.landmark.findFirst({
             where: { name: landmark.name, country: landmark.country }
         });
@@ -93,20 +94,8 @@ async function main() {
                 data: {
                     name: landmark.name,
                     country: landmark.country,
-                    description: `Located in ${landmark.city}, ${landmark.region}`, // Compose description or leave blank? 
-                    // Wait, legacy data doesn't have 'description' field?
-                    // TS Interface: id, name, country, city, region, imagePath, coordinates.
-                    // DB Model: name, country, description, imageUrl, hints.
-                    // Uh oh. The previous file view showed 'description' field in TS interface?
-                    // Let's re-verify Step 145 output.
-                    // Step 145: "export interface LandmarkData { ... name, country, city, region, imagePath, coordinates }"
-                    // NO 'description' field in legacy data! 
-                    // But 'FamousPersonData' has 'description'.
-                    // So for Landmark, I should synthesize description or leave empty.
-                    // I will synthesize: "Located in {city}, {region}."
-
+                    description: `Located in ${landmark.city}, ${landmark.region}`,
                     imageUrl: landmark.imagePath,
-                    // hints: []
                 }
             });
         }
