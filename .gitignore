@@ -79,3 +79,4 @@ tsconfig.tsbuildinfo
 private/
 prisma/seed.ts
 scripts/migrate-via-api.js
+.aider*

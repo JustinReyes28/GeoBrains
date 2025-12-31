@@ -2,10 +2,19 @@
  * Calculate the distance between two points using the Haversine formula
  * @returns Distance in kilometers
  */
+function validateCoordinates(lat: number, lng: number): boolean {
+    return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+}
+
 export function calculateDistance(
     lat1: number, lng1: number,
     lat2: number, lng2: number
 ): number {
+    // Add validation at the start of the function
+    if (!validateCoordinates(lat1, lng1) || !validateCoordinates(lat2, lng2)) {
+        throw new Error("Invalid coordinates: values must be within standard bounds");
+    }
+
     const R = 6371; // Earth's radius in km
     const dLat = toRad(lat2 - lat1);
     const dLng = toRad(lng2 - lng1);

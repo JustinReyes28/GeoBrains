@@ -56,10 +56,15 @@ export type RegisterInput = z.infer<typeof RegisterSchema>;
 // Admin/Country Schemas
 // ==========================================
 
+export const LocationNameSchema = z.string()
+    .min(1, { message: "Name is required" })
+    .max(100, { message: "Name must be less than 100 characters" })
+    .regex(/^[a-zA-Z0-9\s\-',.()]+$/, {
+        message: "Name contains invalid characters. Only letters, numbers, spaces, and basic punctuation allowed."
+    });
+
 export const CountrySchema = z.object({
-    name: z.string().min(1, {
-        message: "Name is required.",
-    }),
+    name: LocationNameSchema,
     code: z.string().min(2, {
         message: "ISO code must be 2 characters.",
     }).max(2, {
@@ -70,28 +75,26 @@ export const CountrySchema = z.object({
     }),
     centerLat: z.number({
         message: "Latitude must be a number.",
+    }).refine(val => val >= -90 && val <= 90, {
+        message: "Latitude must be between -90 and 90"
     }),
     centerLng: z.number({
         message: "Longitude must be a number.",
+    }).refine(val => val >= -180 && val <= 180, {
+        message: "Longitude must be between -180 and 180"
     }),
 });
 
 export const CapitalSchema = z.object({
-    name: z.string().min(1, {
-        message: "Name is required.",
-    }),
+    name: LocationNameSchema,
     countryId: z.string().min(1, {
         message: "Country is required.",
     }),
 });
 
 export const FamousPersonSchema = z.object({
-    name: z.string().min(1, {
-        message: "Name is required.",
-    }),
-    country: z.string().min(1, {
-        message: "Country is required.",
-    }),
+    name: LocationNameSchema,
+    country: LocationNameSchema,
     description: z.string().min(1, {
         message: "Description is required.",
     }),
@@ -104,12 +107,8 @@ export const FamousPersonSchema = z.object({
 });
 
 export const LandmarkSchema = z.object({
-    name: z.string().min(1, {
-        message: "Name is required.",
-    }),
-    country: z.string().min(1, {
-        message: "Country is required.",
-    }),
+    name: LocationNameSchema,
+    country: LocationNameSchema,
     description: z.string().optional().or(z.literal("")),
     imageUrl: z.string().url({
         message: "Please enter a valid image URL.",

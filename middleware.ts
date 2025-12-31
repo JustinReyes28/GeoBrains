@@ -12,8 +12,6 @@ const RATE_LIMIT = 10; // 10 requests
 const RATE_LIMIT_WINDOW = 10000; // 10 seconds
 const MAX_ENTRIES = 1000; // Maximum number of IP entries to track
 
-
-
 function cleanupRequestCounts() {
     const now = Date.now();
     let entryCount = 0;
@@ -56,10 +54,41 @@ function cleanupRequestCounts() {
 }
 
 function getClientIp(request: Request): string {
-    // Use the trusted-proxy-aware client info extraction
-    const clientContext = extractClientInfoFromRequest(request);
+    // First try to get from trusted headers
+    const xForwardedFor = request.headers.get('x-forwarded-for');
+    const xRealIp = request.headers.get('x-real-ip');
 
-    // Return the validated IP from client context, falling back to "unknown" if not available
+    // Validate and parse X-Forwarded-For if present
+    if (xForwardedFor) {
+        const ips = xForwardedFor.split(',').map(ip => ip.trim());
+        const firstIp = ips[0];
+
+        // Basic IP format validation
+        const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+        if (ipRegex.test(firstIp)) {
+            // Additional validation for each octet
+            const octets = firstIp.split('.');
+            const validOctets = octets.every(octet => {
+                const num = parseInt(octet);
+                return num >= 0 && num <= 255;
+            });
+
+            if (validOctets) {
+                return firstIp;
+            }
+        }
+    }
+
+    // Fall back to X-Real-IP if available
+    if (xRealIp) {
+        const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+        if (ipRegex.test(xRealIp)) {
+            return xRealIp;
+        }
+    }
+
+    // Finally fall back to the client context
+    const clientContext = extractClientInfoFromRequest(request);
     return clientContext.ip || "unknown";
 }
 
@@ -188,4 +217,3 @@ export default auth(consolidatedMiddlewareHandler);
 export const config = {
     matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
-
