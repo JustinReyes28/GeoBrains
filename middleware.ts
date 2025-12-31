@@ -174,7 +174,8 @@ async function consolidatedMiddlewareHandler(req: any) {
 
     // If on auth page and logged in, redirect to home
     if (isAuthRoute && isLoggedIn) {
-        return Response.redirect(new URL("/", nextUrl));
+        console.log(`[Middleware] Auth route redirect: ${nextUrl.origin} -> /`);
+        return NextResponse.redirect(new URL("/", nextUrl));
     }
 
     // If trying to access protected route without being logged in
@@ -186,9 +187,9 @@ async function consolidatedMiddlewareHandler(req: any) {
         }
 
         const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-        return Response.redirect(
-            new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-        );
+        const redirectUrl = new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl);
+        console.log(`[Middleware] Protected route redirect: ${nextUrl.origin} -> ${redirectUrl.toString()}`);
+        return NextResponse.redirect(redirectUrl);
     }
 
     // Admin Route Protection
@@ -196,13 +197,15 @@ async function consolidatedMiddlewareHandler(req: any) {
     if (isAdminRoute) {
         // 1. Must be logged in
         if (!isLoggedIn) {
-            return Response.redirect(new URL("/auth/login", nextUrl));
+            console.log(`[Middleware] Admin redirect (not logged in): ${nextUrl.origin} -> /auth/login`);
+            return NextResponse.redirect(new URL("/auth/login", nextUrl));
         }
 
         // 2. Must be the admin user (Email Check)
         // Note: Middleware can't easily check DB role without edge adapter, so we rely on email env var here for speed
         if (req.auth?.user?.email !== process.env.ADMIN_EMAIL) {
-            return Response.redirect(new URL("/", nextUrl));
+            console.log(`[Middleware] Admin redirect (unauthorized): ${nextUrl.origin} -> /`);
+            return NextResponse.redirect(new URL("/", nextUrl));
         }
     }
 
