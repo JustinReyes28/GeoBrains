@@ -2,7 +2,7 @@
 
 GeoBrains is an interactive geography quiz website that helps users test and improve their knowledge of world geography. Built with **Next.js**, **React**, **Leaflet**, and **Prisma**, it features an engaging quiz interface with map visualization and robust database integration.
 
-## 🚀 Getting Started
+## ✦ Getting Started
 
 ### Prerequisites
 - **Node.js**: (v18 or higher recommended)
@@ -41,21 +41,21 @@ GeoBrains is an interactive geography quiz website that helps users test and imp
    ```
    The app will be available at `http://localhost:3000` (Next.js default port).
 
-## 🎯 Features
+## ✦ Features
 - **Interactive Quizzes**: Test your knowledge of countries, capitals, and landmarks
 - **Map Visualization**: See quiz questions on an interactive map
 - **Progress Tracking**: Monitor your quiz performance and improvement
 - **Responsive Design**: Works on desktop and mobile devices
 - **Next.js App Router**: Modern file-based routing with React Server Components
 
-## 🛠 Tech Stack
+## ✦ Tech Stack
 - **Framework**: Next.js 16+ (App Router)
 - **Frontend**: React 19, Tailwind CSS, Leaflet, Lucide React
 - **Backend / DB**: Prisma with PostgreSQL, Vercel Serverless (Ready)
 - **State Management**: TanStack Query (React Query)
 - **Styling**: Tailwind CSS v4
 
-## 📦 Scripts
+## ✦ Scripts
 - `npm run dev`: Start dev server
 - `npm run build`: Build for production
 - `npm run start`: Run production server
