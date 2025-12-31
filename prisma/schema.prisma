@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
 }
 
 // ==========================================
@@ -17,37 +16,37 @@ enum Role {
 }
 
 model User {
-  id                String    @id @default(cuid())
-  name              String?
-  email             String    @unique
-  emailVerified     DateTime?
-  image             String?
-  password          String?   // For credentials auth (hashed)
-  role              Role      @default(USER)
-  
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String? // For credentials auth (hashed)
+  role          Role      @default(USER)
+
   // Security fields for brute-force protection
-  failedAttemptCount Int      @default(0)
-  lastFailedAt      DateTime?
-  lockedUntil       DateTime?
-  
-  accounts          Account[]
-  sessions          Session[]
-  scores            Score[]
-  auditLogs         AuditLog[]
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  failedAttemptCount Int       @default(0)
+  lastFailedAt       DateTime?
+  lockedUntil        DateTime?
+
+  accounts  Account[]
+  sessions  Session[]
+  scores    Score[]
+  auditLogs AuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model AuditLog {
-  id            String   @id @default(cuid())
-  userId        String?
-  user          User?    @relation(fields: [userId], references: [id])
-  action        String   // e.g., "LOGIN_SUCCESS", "LOGIN_FAILED", "ACCOUNT_LOCKED"
-  timestamp     DateTime @default(now())
-  ipAddress     String?
-  userAgent     String?
-  metadata      Json?    // Additional context like error reason
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String // e.g., "LOGIN_SUCCESS", "LOGIN_FAILED", "ACCOUNT_LOCKED"
+  timestamp DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+  metadata  Json? // Additional context like error reason
 
   // Indexes for query performance
   @@index([userId, timestamp])
@@ -108,10 +107,10 @@ model Question {
   categoryId String
   category   QuizCategory @relation(fields: [categoryId], references: [id])
   text       String       @db.Text
-  image      String?      // URL for flags or geographic features
-  options    Json?        // Multiple choice options
+  image      String? // URL for flags or geographic features
+  options    Json? // Multiple choice options
   answer     String       @db.Text
-  metadata   Json?        // Coordinates for maps, population data, etc.
+  metadata   Json? // Coordinates for maps, population data, etc.
   createdAt  DateTime     @default(now())
 }
 
@@ -133,23 +132,23 @@ model Score {
 // ==========================================
 
 model Country {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  code      String    @unique // ISO 2-letter code
+  id        String @id @default(cuid())
+  name      String @unique
+  code      String @unique // ISO 2-letter code
   region    String
   centerLat Float
   centerLng Float
-  
+
   capitals  Capital[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
 
 model Capital {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   name      String
-  countryId String   @unique // One capital per country
-  country   Country  @relation(fields: [countryId], references: [id])
+  countryId String  @unique // One capital per country
+  country   Country @relation(fields: [countryId], references: [id])
 }
 
 model FamousPerson {
