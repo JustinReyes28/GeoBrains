@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import type { MapContainerProps } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { cn } from '../../lib/utils';
@@ -20,6 +20,7 @@ L.Icon.Default.mergeOptions({
 interface MapMarker {
     position: [number, number];
     popup?: string;
+    color?: string; // hex color for custom marker
 }
 
 interface GeoMapProps extends MapContainerProps {
@@ -28,7 +29,28 @@ interface GeoMapProps extends MapContainerProps {
     markers?: MapMarker[];
 }
 
-export const GeoMap = ({ className, children, markers = [], ...props }: GeoMapProps) => {
+// Component to handle map clicks
+function MapClickHandler({ onClick }: { onClick: (lat: number, lng: number) => void }) {
+    useMapEvents({
+        click: (e) => {
+            onClick(e.latlng.lat, e.latlng.lng);
+        },
+    });
+    return null;
+}
+
+// Custom icon creator
+const createCustomIcon = (color: string) => {
+    return new L.DivIcon({
+        className: 'custom-div-icon',
+        html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+        popupAnchor: [0, -10]
+    });
+}
+
+export const GeoMap = ({ className, children, markers = [], onMapClick, ...props }: GeoMapProps) => {
     return (
         <div className={cn("relative w-full h-full rounded-xl overflow-hidden shadow-2xl border border-white/20 z-10", className)}>
             <MapContainer
@@ -43,11 +65,19 @@ export const GeoMap = ({ className, children, markers = [], ...props }: GeoMapPr
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+
+                {onMapClick && <MapClickHandler onClick={onMapClick} />}
+
                 {markers.map((marker, i) => (
-                    <Marker key={i} position={marker.position}>
+                    <Marker
+                        key={i}
+                        position={marker.position}
+                        icon={marker.color ? createCustomIcon(marker.color) : new L.Icon.Default()}
+                    >
                         {marker.popup && <Popup>{marker.popup}</Popup>}
                     </Marker>
                 ))}
+
                 {children}
             </MapContainer>
         </div>

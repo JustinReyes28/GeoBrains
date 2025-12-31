@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, XCircle, Trophy, RotateCcw, Home, Globe2, MapPin } from 'lucide-react';
-import { cn } from '../../src/lib/utils'; // Adjust path if needed
+import { cn } from '@/src/lib/utils';
+import { recordQuizScore } from '@/src/lib/user-actions';
 
 // Dynamic import for Map to avoid SSR
 const GeoMap = dynamic(() => import('../../src/components/Map/GeoMap').then(mod => mod.GeoMap), {
@@ -60,13 +61,20 @@ export default function GuessTheCapitalPage() {
         }
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (currentIndex < questions.length - 1) {
             setCurrentIndex(prev => prev + 1);
             setSelectedAnswer(null);
             setIsAnswered(false);
         } else {
             setShowResult(true);
+            // Record the score when the quiz is finished
+            try {
+                // Determine category slug - for now hardcoded but could be dynamic
+                await recordQuizScore(score, questions.length, 'world-capitals');
+            } catch (error) {
+                console.error("Failed to record quiz score:", error);
+            }
         }
     };
 

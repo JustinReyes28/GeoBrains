@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -13,7 +14,9 @@ import {
     Trophy,
     History,
     TrendingUp,
-    User
+    User,
+    Languages,
+    Coins
 } from 'lucide-react';
 import { cn } from '../src/lib/utils';
 
@@ -29,15 +32,31 @@ const GeoMap = dynamic(() => import('../src/components/Map/GeoMap').then(mod => 
 
 const categories = [
     { id: 'capitals', name: 'Capitals', icon: Globe2, color: 'text-blue-400', desc: 'Identify world capitals', href: '/guess-the-capital' },
-    { id: 'flags', name: 'Flag ID', icon: Flag, color: 'text-red-400', desc: 'Name countries by their flags' },
-    { id: 'locations', name: 'Map Pin', icon: MapPin, color: 'text-emerald-400', desc: 'Find countries on the map' },
-    { id: 'comparisons', name: 'Stats War', icon: BarChart3, color: 'text-amber-400', desc: 'Compare population & area' },
-    { id: 'borders', name: 'Borders', icon: Milestone, color: 'text-purple-400', desc: 'Neighboring countries' },
-    { id: 'features', name: 'Landmarks', icon: Mountain, color: 'text-cyan-400', desc: 'Geographic wonders' },
+    { id: 'flags', name: 'Flag ID', icon: Flag, color: 'text-red-400', desc: 'Name countries by their flags', href: '/flag-quiz' },
+    { id: 'locations', name: 'Map Pin', icon: MapPin, color: 'text-emerald-400', desc: 'Find countries on the map', href: '/map-pin-quiz' },
+    { id: 'comparisons', name: 'Stats War', icon: BarChart3, color: 'text-amber-400', desc: 'Compare population & area', href: '/stats-war' },
+    { id: 'borders', name: 'Borders', icon: Milestone, color: 'text-purple-400', desc: 'Neighboring countries', href: '/borders-quiz' },
+    { id: 'features', name: 'Landmarks', icon: Mountain, color: 'text-cyan-400', desc: 'Geographic wonders', href: '/landmarks-quiz' },
+    { id: 'languages', name: 'Languages Quiz', icon: Languages, color: 'text-blue-400', desc: 'World languages', href: '/languages-quiz' },
+    { id: 'currencies', name: 'Currencies Quiz', icon: Coins, color: 'text-emerald-400', desc: 'Global currencies', href: '/currencies-quiz' },
+    { id: 'famous-people', name: 'Famous People', icon: User, color: 'text-amber-400', desc: 'Historical figures', href: '/famous-people-quiz' },
 ];
 
 export default function Home() {
+    const router = useRouter();
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+    const handleQuickPlay = () => {
+        // Filter categories that have an href (are implemented)
+        const availableQuizzes = categories.filter(cat => cat.href);
+
+        if (availableQuizzes.length > 0) {
+            const randomQuiz = availableQuizzes[Math.floor(Math.random() * availableQuizzes.length)];
+            if (randomQuiz.href) {
+                router.push(randomQuiz.href);
+            }
+        }
+    };
 
     return (
         <div className="min-h-screen bg-bg-primary text-text-primary selection:bg-brand/30">
@@ -68,7 +87,7 @@ export default function Home() {
                     <div className="flex flex-col lg:flex-row gap-12 items-center">
                         <div className="flex-1 space-y-6">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel border border-brand/20 text-xs font-semibold text-brand tracking-wide uppercase">
-                                <TrendingUp className="w-3 h-3" /> New Daily Challenges Added
+                                <TrendingUp className="w-3 h-3" /> New Challenges are Added Everyday
                             </div>
                             <h1 className="text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight">
                                 Master the <br />
@@ -80,12 +99,15 @@ export default function Home() {
                             </p>
 
                             <div className="flex flex-wrap gap-4 pt-4">
-                                <button className="px-8 py-4 rounded-xl bg-brand text-white font-bold shadow-xl shadow-brand/20 hover:scale-[1.02] transition-transform active:scale-95">
+                                <button
+                                    onClick={handleQuickPlay}
+                                    className="px-8 py-4 rounded-xl bg-brand text-white font-bold shadow-xl shadow-brand/20 hover:scale-[1.02] transition-transform active:scale-95"
+                                >
                                     Quick Play
                                 </button>
-                                <button className="px-8 py-4 rounded-xl glass-card font-bold hover:scale-[1.02] transition-transform active:scale-95">
-                                    Browse Quizzes
-                                </button>
+                                <Link href="https://github.com/JustinReyes28/GeoBrains" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl glass-card font-bold hover:scale-[1.02] transition-transform active:scale-95">
+                                    Explore the code
+                                </Link>
                             </div>
                         </div>
 
@@ -104,11 +126,6 @@ export default function Home() {
                         <div>
                             <h2 className="text-3xl font-bold mb-2">Quiz Categories</h2>
                             <p className="text-text-secondary">Select a mode to earn your rank</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <button className="p-2 rounded-lg glass-card text-text-secondary hover:text-text-primary">
-                                <History className="w-5 h-5" />
-                            </button>
                         </div>
                     </div>
 
@@ -159,7 +176,7 @@ export default function Home() {
 
             {/* Footer */}
             <footer className="mt-auto border-t border-white/5 py-8 text-center text-sm text-text-secondary">
-                <p>© 2025 GeoBrains • Built for Explorers</p>
+                <p>© 2025 GeoBrains • Made with AI Tools</p>
             </footer>
         </div>
     );

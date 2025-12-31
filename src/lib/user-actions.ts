@@ -43,9 +43,12 @@ export async function getUserLeaderboardStats(userId: string): Promise<UserLeade
         // Get the current session to verify authorization
         const session = await auth();
 
+        // Add debug logging
+        console.log(`[getUserLeaderboardStats] Requested userId: ${maskUserId(userId)}, Session userId: ${maskUserId(session?.user?.id)}`);
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
-            console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access data for user ${maskUserId(userId)}`);
+            console.warn(`Unauthorized access attempt in getUserLeaderboardStats: session user ${maskUserId(session?.user?.id)} tried to access data for user ${maskUserId(userId)}`);
             return null;
         }
 
@@ -87,28 +90,8 @@ export async function getUserLeaderboardStats(userId: string): Promise<UserLeade
             `
         );
 
-        // Calculate total number of users with scores for fallback
-        const totalUsersResult = await prisma.score.groupBy({
-            by: ["userId"],
-            _sum: { value: true },
-        });
-
-        // Calculate count of users with higher scores for alternative ranking
-        interface HigherScoresCount {
-            count: bigint;
-        }
-
-        const higherScoresCount = await prisma.$queryRaw<HigherScoresCount[]>(
-            Prisma.sql`
-                SELECT COUNT(DISTINCT "userId") as count
-                FROM "Score"
-                GROUP BY "userId"
-                HAVING SUM(value) > ${userTotalScore}
-            `
-        );
-
-        // Calculate rank: count of users with higher scores + 1
-        const rank = (higherScoresCount.length > 0 ? Number(higherScoresCount[0].count) : 0) + 1;
+        // Calculate rank from the DENSE_RANK result
+        const rank = rankResult.length > 0 ? Number(rankResult[0].rank) : 1;
 
         // Format join date (e.g., "December 2024")
         const joinDate = user.createdAt.toLocaleDateString('en-US', {
@@ -147,9 +130,12 @@ export async function getUserCategoryPerformance(userId: string): Promise<Catego
         // Get the current session to verify authorization
         const session = await auth();
 
+        // Add debug logging
+        console.log(`[getUserCategoryPerformance] Requested userId: ${maskUserId(userId)}, Session userId: ${maskUserId(session?.user?.id)}`);
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
-            console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access category performance for user ${maskUserId(userId)}`);
+            console.warn(`Unauthorized access attempt in getUserCategoryPerformance: session user ${maskUserId(session?.user?.id)} tried to access category performance for user ${maskUserId(userId)}`);
             return [];
         }
 
@@ -210,9 +196,12 @@ export async function getUserRecentActivity(userId: string, limit = 4): Promise<
         // Get the current session to verify authorization
         const session = await auth();
 
+        // Add debug logging
+        console.log(`[getUserRecentActivity] Requested userId: ${maskUserId(userId)}, Session userId: ${maskUserId(session?.user?.id)}`);
+
         // Verify that the requested userId matches the authenticated user's ID
         if (!session?.user?.id || session.user.id !== userId) {
-            console.warn(`Unauthorized access attempt: session user ${maskUserId(session?.user?.id)} tried to access recent activity for user ${maskUserId(userId)}`);
+            console.warn(`Unauthorized access attempt in getUserRecentActivity: session user ${maskUserId(session?.user?.id)} tried to access recent activity for user ${maskUserId(userId)}`);
             return [];
         }
 
@@ -313,5 +302,86 @@ export async function getLeaderboardRankings(limit = 10): Promise<LeaderboardPla
     } catch (error) {
         console.error("Error fetching leaderboard rankings:", error);
         return [];
+    }
+}
+
+/**
+ * Records a quiz score in the database.
+ * Calculates the percentage score and links it to the user and category.
+ */
+export async function recordQuizScore(
+    score: number,
+    totalQuestions: number,
+    categorySlug: string,
+    timeInSeconds: number = 0,
+    isRawValue: boolean = false
+) {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const userId = session.user.id;
+        const value = isRawValue ? score : Math.round((score / totalQuestions) * 100);
+
+        // Ensure the category exists
+        const category = await prisma.quizCategory.upsert({
+            where: { slug: categorySlug },
+            update: {},
+            create: {
+                name: categorySlug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+                slug: categorySlug,
+            }
+        });
+
+        // Record the score
+        await prisma.score.create({
+            data: {
+                userId,
+                categoryId: category.id,
+                value,
+                timeInSeconds,
+            }
+        });
+
+        return { success: true };
+    } catch (error) {
+        console.error("Error recording quiz score:", error);
+        return { success: false, error: "Internal Server Error" };
+    }
+}
+
+/**
+ * Fetches the highest score for a specific category for the current user.
+ */
+export async function getCategoryHighScore(categorySlug: string): Promise<number> {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) return 0;
+
+        const userId = session.user.id;
+
+        const category = await prisma.quizCategory.findUnique({
+            where: { slug: categorySlug },
+            select: { id: true }
+        });
+
+        if (!category) return 0;
+
+        const maxScore = await prisma.score.aggregate({
+            where: {
+                userId,
+                categoryId: category.id
+            },
+            _max: {
+                value: true
+            }
+        });
+
+        return maxScore._max.value ?? 0;
+    } catch (error) {
+        console.error("Error fetching category high score:", error);
+        return 0;
     }
 }

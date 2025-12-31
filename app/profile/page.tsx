@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -52,7 +52,7 @@ const mockUser = {
     totalScore: 12450,
 };
 
-export default function ProfilePage() {
+function ProfileContent() {
     const searchParams = useSearchParams();
     const { data: session, status } = useSession();
     const isAuthenticated = status === 'authenticated';
@@ -334,7 +334,7 @@ export default function ProfilePage() {
                                         </div>
                                     ) : categoryPerformance.length > 0 ? (
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            {categoryPerformance.map((cat) => {
+                                            {categoryPerformance.filter(cat => cat.name !== 'Guess the Capital').map((cat) => {
                                                 const iconMap: Record<string, any> = {
                                                     capitals: Globe2,
                                                     flags: Flag,
@@ -594,5 +594,17 @@ export default function ProfilePage() {
                 <p>© 2025 GeoBrains • Built for Explorers</p>
             </footer>
         </div>
+    );
+}
+
+export default function ProfilePage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-bg-primary">
+                <Globe2 className="w-8 h-8 animate-spin text-brand" />
+            </div>
+        }>
+            <ProfileContent />
+        </Suspense>
     );
 }
