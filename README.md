@@ -2,15 +2,13 @@
 
 GeoBrains is an interactive geography quiz website that helps users test and improve their knowledge of world geography. Built with **Next.js**, **React**, **Leaflet**, and **Prisma**, it features an engaging quiz interface with map visualization and robust database integration.
 
-
 Here are some screenshots of the GeoBrains application:
 
-<img src="public\images\Dashboard1.png" alt="Dashboard View" width="500"/> <img src="public\images\Quiz_Category.png" alt="Quiz Category View" width="500"/>
+<img src="public/images/Dashboard1.png" alt="Dashboard View" width="500"/> <img src="public/images/Quiz_Category.png" alt="Quiz Category View" width="500"/>
 
-<img src="public\images\Profile.png" alt="Profile View" width="500"/> <img src="public\images\Category_Perfomance.png" alt="Category Performance View" width="500"/>
+<img src="public/images/Profile.png" alt="Profile View" width="500"/> <img src="public/images/Category_Perfomance.png" alt="Category Performance View" width="500"/>
 
-<img src="public\images\Leaderboard.png" alt="Leaderboard View" width="500"/> <img src="public\images\Register_User.png" alt="Register User View" width="500"/>
-
+<img src="public/images/Leaderboard.png" alt="Leaderboard View" width="500"/> <img src="public/images/Register_User.png" alt="Register User View" width="500"/>
 
 ## ✦ Getting Started
 
