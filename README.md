@@ -13,6 +13,7 @@ GeoBrains is a sophisticated geography quiz platform that helps users test and i
 ## ✦ Key Features
 
 ### 🎯 Quiz Categories
+
 GeoBrains offers 8 different quiz categories to test various aspects of geography knowledge:
 
 - **Guess the Capital** - Identify capital cities of countries
@@ -25,23 +26,28 @@ GeoBrains offers 8 different quiz categories to test various aspects of geograph
 - **Languages Quiz** - Recognize official languages
 
 ### 🔐 Advanced Security Features
+
 - **Email Verification** - 6-digit numeric code system with 10-minute expiration
 - **Account Security** - Failed attempt tracking, account locking, and IP-based security
 - **Audit Logging** - Comprehensive user activity tracking with timestamps and metadata
 - **Role-Based Access Control** - USER and ADMIN roles with different permissions
+- **Social Authentication** - Google OAuth integration for seamless login
 
 ### 📊 User Features
+
 - **Interactive Profile Dashboard** - Track quiz performance across all categories
 - **Global Leaderboards** - Compete with other users worldwide
 - **Performance Analytics** - Detailed statistics and progress tracking
 - **Responsive Design** - Optimized for both desktop and mobile devices
 
 ### 🎨 Premium UI/UX
+
 - **Rich Visual Content** - High-quality images, smooth animations, and glassmorphism effects
 - **Interactive Maps** - Leaflet.js integration for engaging map-based quizzes
 - **Modern Design** - Tailwind CSS v4 with custom color palettes and gradients
 
 ### 👨‍💻 Admin Dashboard
+
 - **Content Management** - Add, edit, and manage quiz content
 - **User Administration** - Manage user accounts and roles
 - **Data Analytics** - View system-wide statistics and performance metrics
@@ -49,21 +55,25 @@ GeoBrains offers 8 different quiz categories to test various aspects of geograph
 ## ✦ Tech Stack
 
 ### Core Technologies
+
 - **Framework**: [Next.js 16+ (App Router)](https://nextjs.org/docs)
 - **Frontend**: [React 19](https://react.dev/) with Server Components
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) using `@tailwindcss/postcss`
 - **Icons**: [Lucide React](https://lucide.dev/)
 
 ### Maps & Visualization
+
 - **Interactive Maps**: [Leaflet.js](https://leafletjs.com/) & [React-Leaflet](https://react-leaflet.js.org/)
 
 ### Data & State Management
+
 - **State Management**: [TanStack Query (React Query) v5](https://tanstack.com/query/latest)
 - **Database ORM**: [Prisma v7+](https://www.prisma.io/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/) (Neon/Vercel hosted)
 - **Forms & Validation**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
 
 ### Authentication & Security
+
 - **Authentication**: [NextAuth.js (Auth.js) v5 Beta](https://authjs.dev/)
 - **Email Service**: [Nodemailer](https://nodemailer.com/) with Google SMTP
 - **Password Hashing**: bcryptjs
@@ -89,6 +99,7 @@ geobrains/
 ## ✦ Getting Started
 
 ### Prerequisites
+
 - **Node.js**: v18 or higher (v20+ recommended)
 - **PostgreSQL**: For local database storage (Default port: `5432`)
 - **VS Code**: Recommended editor (or any modern IDE)
@@ -96,30 +107,38 @@ geobrains/
 ### Local Setup
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/JustinReyes28/GeoBrains.git
    cd GeoBrains
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 3. **Configure Environment Variables**:
    Copy the example environment file and update it with your database credentials:
+
    ```bash
    cp .env.example .env
    ```
+
    Edit `.env` and configure:
+
    - `DATABASE_URL` - Main PostgreSQL connection URL
    - `POSTGRES_PRISMA_URL` - Prisma connection URL with pooling
    - `POSTGRES_URL_NON_POOLING` - Direct database access URL
    - `NEXTAUTH_SECRET` - Random secret for NextAuth.js
    - `NEXTAUTH_URL` - Your application URL
+   - `GOOGLE_CLIENT_ID` - Google OAuth client ID
+   - `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
    - Email configuration (SMTP settings)
 
 4. **Initialize the Database**:
+
    ```bash
    npx prisma generate
    npx prisma migrate dev
@@ -142,13 +161,16 @@ geobrains/
 ## ✦ Database Management
 
 ### Prisma Commands
+
 - **Generate Client**: `npx prisma generate`
 - **Apply Migrations**: `npx prisma migrate dev`
 - **Prisma Studio**: `npx prisma studio` (GUI for database exploration)
 - **Reset Database**: `npx prisma migrate reset`
 
 ### Database Models
+
 The application includes comprehensive data models:
+
 - **User Management**: Users, Accounts, Sessions, Verification Tokens
 - **Security**: Audit Logs with IP tracking and metadata
 - **Quiz Content**: Countries, Capitals, Famous People, Landmarks, Currencies, Languages
@@ -159,18 +181,21 @@ The application includes comprehensive data models:
 GeoBrains implements enterprise-grade security measures:
 
 ### 🛡️ Authentication Security
+
 - **Secure Password Storage**: bcryptjs hashing with salt
 - **Session Management**: JWT-based sessions with expiration
 - **Email Verification**: Time-limited 6-digit codes
 - **Account Locking**: Automatic lockout after failed attempts
 
 ### 🔒 Data Protection
+
 - **Environment Variables**: Sensitive configuration via `.env`
 - **CSRF Protection**: Built-in NextAuth.js protection
 - **Secure Headers**: Comprehensive security middleware
 - **Input Validation**: Zod schema validation for all inputs
 
 ### 📋 Audit & Monitoring
+
 - **Comprehensive Logging**: All user actions tracked with timestamps
 - **IP Tracking**: User activity linked to IP addresses
 - **Metadata Collection**: Detailed context for security events
@@ -180,11 +205,13 @@ GeoBrains implements enterprise-grade security measures:
 GeoBrains is optimized for modern hosting platforms:
 
 ### Recommended Hosting
+
 - **Vercel**: Native Next.js hosting with serverless functions
 - **Neon**: Serverless PostgreSQL database
 - **Railway**: Alternative full-stack hosting
 
 ### Production Configuration
+
 - Set `NODE_ENV=production`
 - Configure proper SMTP for email services
 - Set up domain and SSL certificates
@@ -193,6 +220,7 @@ GeoBrains is optimized for modern hosting platforms:
 ## ✦ Contributing
 
 Contributions are welcome! Please follow these guidelines:
+
 - Use TypeScript with strict typing
 - Follow existing code patterns and conventions
 - Write comprehensive tests for new features
@@ -206,6 +234,7 @@ Contributions are welcome! Please follow these guidelines:
 ## ✦ Support
 
 For issues, questions, or feature requests:
+
 - Open a GitHub issue
 - Check the [documentation](#)
 - Review the [security guidelines](Security.md)
