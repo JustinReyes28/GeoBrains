@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { NextRequest } from "next/server";
 
@@ -164,6 +165,11 @@ export const {
     trustHost: true,
     ...authConfig,
     providers: [
+        Google({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            allowDangerousEmailAccountLinking: true,
+        }),
         Credentials({
             async authorize(credentials, request) {
                 const validatedFields = LoginSchema.safeParse(credentials);
@@ -261,6 +267,15 @@ export const {
             if (request) {
                 const clientContext = extractClientInfoFromRequest(request);
                 setRequestContext(request, clientContext);
+
+                // Audit logging for OAuth/Social Providers
+                // Credentials provider has its own audit logging in authorize()
+                if (message.account?.provider && message.account.provider !== "credentials") {
+                    await logAudit(request, message.user?.id || null, "LOGIN_SUCCESS", {
+                        provider: message.account.provider,
+                        message: `User logged in via ${message.account.provider}`,
+                    }, clientContext);
+                }
             }
         },
         async signOut(message: any) {

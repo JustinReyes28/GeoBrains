@@ -8,10 +8,9 @@ import Link from "next/link";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { LoginSchema } from "@/src/lib/schemas";
 import { login } from "@/src/lib/auth-actions";
-import { useRouter } from "next/navigation";
+import { Social } from "@/components/auth/Social";
 
 export default function LoginPage() {
-    const router = useRouter();
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
     const [isPending, startTransition] = useTransition();
@@ -126,6 +125,10 @@ export default function LoginPage() {
                             )}
                         </button>
                     </form>
+
+                    <div className="mt-8">
+                        <Social />
+                    </div>
 
                     <div className="mt-6 text-center text-sm text-text-secondary">
                         Don't have an account?{" "}

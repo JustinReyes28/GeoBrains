@@ -9,6 +9,7 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 import { RegisterSchema } from "@/src/lib/schemas";
 import { register } from "@/src/lib/auth-actions";
 import { useRouter } from "next/navigation";
+import { Social } from "@/components/auth/Social";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -197,6 +198,8 @@ export default function RegisterPage() {
                             )}
                         </button>
                     </form>
+
+                    <Social />
 
                     <div className="mt-6 text-center text-sm text-text-secondary">
                         Already have an account?{" "}
