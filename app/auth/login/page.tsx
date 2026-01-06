@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -127,7 +127,9 @@ export default function LoginPage() {
                     </form>
 
                     <div className="mt-8">
-                        <Social />
+                        <Suspense fallback={<div className="h-10 w-full bg-white/5 animate-pulse rounded-lg" />}>
+                            <Social />
+                        </Suspense>
                     </div>
 
                     <div className="mt-6 text-center text-sm text-text-secondary">
