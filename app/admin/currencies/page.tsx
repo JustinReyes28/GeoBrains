@@ -1,5 +1,6 @@
 "use client";
 
+import type { Currency } from '@prisma/client';
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Search, Loader2 } from "lucide-react";
@@ -15,9 +16,9 @@ export default function CurrenciesPage() {
     const [search, setSearch] = useState("");
     const queryClient = useQueryClient();
 
-    const { data: currencies, isLoading } = useQuery({
+    const { data: currencies, isLoading } = useQuery<Currency[]>({
         queryKey: ["currencies"],
-        queryFn: async () => (await fetch("/api/admin/currencies").then(res => res.json())),
+        queryFn: async () => { const res=await fetch('/api/admin/currencies'); if(!res.ok) throw new Error('Could not load currencies'); return res.json(); },
     });
 
     const createMutation = useMutation({
@@ -40,7 +41,7 @@ export default function CurrenciesPage() {
         resolver: zodResolver(CurrencySchema),
     });
 
-    const filtered = currencies?.filter((c: any) =>
+    const filtered = currencies?.filter((c: Currency) =>
         c.name.toLowerCase().includes(search.toLowerCase()) ||
         c.country.toLowerCase().includes(search.toLowerCase())
     ) || [];
@@ -81,7 +82,7 @@ export default function CurrenciesPage() {
                     <tbody className="divide-y divide-white/5">
                         {isLoading ? (
                             <tr><td colSpan={3} className="px-6 py-8 text-center text-white/40"><Loader2 className="animate-spin mx-auto w-6 h-6" /></td></tr>
-                        ) : filtered.map((item: any) => (
+                        ) : filtered.map((item: Currency) => (
                             <tr key={item.id} className="hover:bg-white/5 transition-colors">
                                 <td className="px-6 py-4 text-white font-medium">{item.name}</td>
                                 <td className="px-6 py-4 text-white/70">{item.symbol}</td>

@@ -11,7 +11,7 @@ export async function GET() {
             orderBy: { name: 'asc' }
         });
         return NextResponse.json(landmarks);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Failed to fetch landmarks" }, { status: 500 });
     }
 }

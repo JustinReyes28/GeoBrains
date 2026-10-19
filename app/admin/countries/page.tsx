@@ -2,22 +2,24 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Trash2, Edit, Loader2 } from "lucide-react";
+import { Plus, Search, Edit, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CountrySchema } from "@/src/lib/schemas";
 import { z } from "zod";
 
+import type { Capital } from '@prisma/client';
+type CountryRecord = CountryForm & {id:string;capitals:Capital|null};
 type CountryForm = z.infer<typeof CountrySchema>;
 
 export default function CountriesPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingCountry, setEditingCountry] = useState<any>(null);
+    const [editingCountry, setEditingCountry] = useState<CountryRecord|null>(null);
     const [search, setSearch] = useState("");
     const queryClient = useQueryClient();
 
     // Fetch Countries
-    const { data: countries, isLoading } = useQuery({
+    const { data: countries, isLoading } = useQuery<CountryRecord[]>({
         queryKey: ["countries"],
         queryFn: async () => {
             const res = await fetch("/api/admin/countries");
@@ -52,7 +54,8 @@ export default function CountriesPage() {
 
     // Update Mutation
     const updateMutation = useMutation({
-        mutationFn: async (data: any) => {
+        mutationFn: async (data: CountryForm) => {
+            if(!editingCountry) throw new Error("Select a country to edit");
             const res = await fetch("/api/admin/countries", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -90,7 +93,7 @@ export default function CountriesPage() {
         }
     };
 
-    const handleEdit = (country: any) => {
+    const handleEdit = (country: CountryRecord) => {
         setEditingCountry(country);
         reset({
             name: country.name,
@@ -114,7 +117,7 @@ export default function CountriesPage() {
         });
     };
 
-    const filteredCountries = countries?.filter((c: any) =>
+    const filteredCountries = countries?.filter((c: CountryRecord) =>
         c.name.toLowerCase().includes(search.toLowerCase())
     ) || [];
 
@@ -169,12 +172,12 @@ export default function CountriesPage() {
                                 </td>
                             </tr>
                         ) : (
-                            filteredCountries.map((country: any) => (
+                            filteredCountries.map((country: CountryRecord) => (
                                 <tr key={country.id} className="hover:bg-white/5 transition-colors group">
                                     <td className="px-6 py-4 text-white font-medium">{country.name}</td>
                                     <td className="px-6 py-4 text-white/70">{country.code}</td>
                                     <td className="px-6 py-4 text-white/70">{country.region}</td>
-                                    <td className="px-6 py-4 text-white/70">{country.capital?.name || "-"}</td>
+                                    <td className="px-6 py-4 text-white/70">{country.capitals?.name || "-"}</td>
                                     <td className="px-6 py-4 text-right">
                                         <button
                                             onClick={() => handleEdit(country)}

@@ -8,6 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CapitalSchema } from "@/src/lib/schemas";
 import { z } from "zod";
 
+import type { Capital,Country } from '@prisma/client';
+type CapitalRecord = Capital & { country:Country };
 type CapitalForm = z.infer<typeof CapitalSchema>;
 
 export default function CapitalsPage() {
@@ -15,12 +17,12 @@ export default function CapitalsPage() {
     const [search, setSearch] = useState("");
     const queryClient = useQueryClient();
 
-    const { data: capitals, isLoading } = useQuery({
+    const { data: capitals, isLoading } = useQuery<CapitalRecord[]>({
         queryKey: ["capitals"],
         queryFn: async () => (await fetch("/api/admin/capitals").then(res => res.json())),
     });
 
-    const { data: countries } = useQuery({
+    const { data: countries } = useQuery<Country[]>({
         queryKey: ["countries"],
         queryFn: async () => (await fetch("/api/admin/countries").then(res => res.json())),
     });
@@ -45,7 +47,7 @@ export default function CapitalsPage() {
         resolver: zodResolver(CapitalSchema),
     });
 
-    const filteredCapitals = capitals?.filter((c: any) =>
+    const filteredCapitals = capitals?.filter((c: CapitalRecord) =>
         c.name.toLowerCase().includes(search.toLowerCase()) ||
         c.country?.name.toLowerCase().includes(search.toLowerCase())
     ) || [];
@@ -85,7 +87,7 @@ export default function CapitalsPage() {
                     <tbody className="divide-y divide-white/5">
                         {isLoading ? (
                             <tr><td colSpan={2} className="px-6 py-8 text-center text-white/40"><Loader2 className="animate-spin mx-auto w-6 h-6" /></td></tr>
-                        ) : filteredCapitals.map((capital: any) => (
+                        ) : filteredCapitals.map((capital: CapitalRecord) => (
                             <tr key={capital.id} className="hover:bg-white/5 transition-colors">
                                 <td className="px-6 py-4 text-white font-medium">{capital.name}</td>
                                 <td className="px-6 py-4 text-white/70">{capital.country?.name}</td>
@@ -112,7 +114,7 @@ export default function CapitalsPage() {
                                 <label className="text-sm font-medium text-white/70">Country</label>
                                 <select {...register("countryId")} className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white">
                                     <option value="">Select Country...</option>
-                                    {countries?.map((c: any) => (
+                                    {countries?.map((c: Country) => (
                                         <option key={c.id} value={c.id}>{c.name}</option>
                                     ))}
                                 </select>

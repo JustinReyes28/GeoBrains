@@ -6,14 +6,6 @@ export interface ClientContext {
     userAgent?: string;
 }
 
-// Configuration for trusted proxy handling
-// Set TRUSTED_PROXY_COUNT environment variable to specify how many proxies to trust
-// Set PREFER_PROVIDER_HEADERS=true to prefer provider-specific headers over X-Forwarded-For
-interface TrustedProxyConfig {
-    trustedProxyCount: number;
-    preferProviderHeaders: boolean;
-}
-
 // Thread-safe request context using a WeakMap to avoid memory leaks
 export const requestContextMap = new WeakMap<Request, ClientContext>();
 

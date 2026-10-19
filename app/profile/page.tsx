@@ -335,7 +335,7 @@ function ProfileContent() {
                                     ) : categoryPerformance.length > 0 ? (
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                             {categoryPerformance.filter(cat => cat.name !== 'Guess the Capital').map((cat) => {
-                                                const iconMap: Record<string, any> = {
+                                                const iconMap: Record<string, typeof Globe2> = {
                                                     capitals: Globe2,
                                                     flags: Flag,
                                                     locations: MapPin,

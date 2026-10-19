@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
     );
 }
 
-function DashboardCard({ title, description, icon, href, color }: any) {
+function DashboardCard({ title, description, icon, href, color }: { title:string; description:string; icon:React.ReactNode; href:string; color:string }) {
     return (
         <Link
             href={href}

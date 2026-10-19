@@ -1,96 +1,12 @@
+import { worldCountries } from './world';
 export interface CountryData {
     country: string;
     capital: string;
     region: string;
     lat?: number;
-    lng?: number; // Approximate capital coordinates
+    lng?: number;
     capital_formatted?: string;
 }
-
-export const capitalsData: CountryData[] = [
-    { country: "France", capital: "Paris", region: "Europe", lat: 48.8566, lng: 2.3522 },
-    { country: "Germany", capital: "Berlin", region: "Europe", lat: 52.5200, lng: 13.4050 },
-    { country: "United Kingdom", capital: "London", region: "Europe", lat: 51.5074, lng: -0.1278 },
-    { country: "Italy", capital: "Rome", region: "Europe", lat: 41.9028, lng: 12.4964 },
-    { country: "Spain", capital: "Madrid", region: "Europe", lat: 40.4168, lng: -3.7038 },
-    { country: "Portugal", capital: "Lisbon", region: "Europe", lat: 38.7223, lng: -9.1393 },
-    { country: "Netherlands", capital: "Amsterdam", region: "Europe", lat: 52.3676, lng: 4.9041 },
-    { country: "Belgium", capital: "Brussels", region: "Europe", lat: 50.8503, lng: 4.3517 },
-    { country: "Sweden", capital: "Stockholm", region: "Europe", lat: 59.3293, lng: 18.0686 },
-    { country: "Norway", capital: "Oslo", region: "Europe", lat: 59.9139, lng: 10.7522 },
-    { country: "Denmark", capital: "Copenhagen", region: "Europe", lat: 55.6761, lng: 12.5683 },
-    { country: "Finland", capital: "Helsinki", region: "Europe", lat: 60.1695, lng: 24.9354 },
-    { country: "Poland", capital: "Warsaw", region: "Europe", lat: 52.2297, lng: 21.0122 },
-    { country: "Greece", capital: "Athens", region: "Europe", lat: 37.9838, lng: 23.7275 },
-    { country: "Russia", capital: "Moscow", region: "Europe", lat: 55.7558, lng: 37.6173 },
-    { country: "Japan", capital: "Tokyo", region: "Asia", lat: 35.6762, lng: 139.6503 },
-    { country: "China", capital: "Beijing", region: "Asia", lat: 39.9042, lng: 116.4074 },
-    { country: "India", capital: "New Delhi", region: "Asia", lat: 28.6139, lng: 77.2090 },
-    { country: "South Korea", capital: "Seoul", region: "Asia", lat: 37.5665, lng: 126.9780 },
-    { country: "Thailand", capital: "Bangkok", region: "Asia", lat: 13.7563, lng: 100.5018 },
-    { country: "Vietnam", capital: "Hanoi", region: "Asia", lat: 21.0285, lng: 105.8542 },
-    { country: "Indonesia", capital: "Jakarta", region: "Asia", lat: -6.2088, lng: 106.8456 },
-    { country: "Australia", capital: "Canberra", region: "Oceania", lat: -35.2809, lng: 149.1300 },
-    { country: "New Zealand", capital: "Wellington", region: "Oceania", lat: -41.2865, lng: 174.7762 },
-    { country: "United States", capital: "Washington, D.C.", region: "Americas", lat: 38.9072, lng: -77.0369 },
-    { country: "Canada", capital: "Ottawa", region: "Americas", lat: 45.4215, lng: -75.6972 },
-    { country: "Mexico", capital: "Mexico City", region: "Americas", lat: 19.4326, lng: -99.1332 },
-    { country: "Brazil", capital: "Brasília", region: "Americas", lat: -15.7975, lng: -47.8919 },
-    { country: "Argentina", capital: "Buenos Aires", region: "Americas", lat: -34.6037, lng: -58.3816 },
-    { country: "Egypt", capital: "Cairo", region: "Africa", lat: 30.0444, lng: 31.2357 },
-    { country: "South Africa", capital: "Pretoria", region: "Africa", lat: -25.7479, lng: 28.2293 }, // Executive capital
-    { country: "Nigeria", capital: "Abuja", region: "Africa", lat: 9.0765, lng: 7.3986 },
-    { country: "Kenya", capital: "Nairobi", region: "Africa", lat: -1.2921, lng: 36.8219 },
-    { country: "Morocco", capital: "Rabat", region: "Africa", lat: 34.0209, lng: -6.8416 },
-    // European Additions
-    { country: "Austria", capital: "Vienna", region: "Europe", lat: 48.2082, lng: 16.3738 },
-    { country: "Switzerland", capital: "Bern", region: "Europe", lat: 46.9480, lng: 7.4474 },
-    { country: "Ireland", capital: "Dublin", region: "Europe", lat: 53.3498, lng: -6.2603 },
-    { country: "Hungary", capital: "Budapest", region: "Europe", lat: 47.4979, lng: 19.0402 },
-    { country: "Czech Republic", capital: "Prague", region: "Europe", lat: 50.0755, lng: 14.4378 },
-    { country: "Ukraine", capital: "Kyiv", region: "Europe", lat: 50.4501, lng: 30.5234 },
-    { country: "Turkey", capital: "Ankara", region: "Europe", lat: 39.9334, lng: 32.8597 },
-    { country: "Romania", capital: "Bucharest", region: "Europe", lat: 44.4268, lng: 26.1025 },
-    // Asian Additions
-    { country: "Pakistan", capital: "Islamabad", region: "Asia", lat: 33.6844, lng: 73.0479 },
-    { country: "Bangladesh", capital: "Dhaka", region: "Asia", lat: 23.8103, lng: 90.4125 },
-    { country: "Philippines", capital: "Manila", region: "Asia", lat: 14.5995, lng: 120.9842 },
-    { country: "Malaysia", capital: "Kuala Lumpur", region: "Asia", lat: 3.1390, lng: 101.6869 },
-    { country: "Singapore", capital: "Singapore", region: "Asia", lat: 1.3521, lng: 103.8198 },
-    { country: "Saudi Arabia", capital: "Riyadh", region: "Asia", lat: 24.7136, lng: 46.6753 },
-    { country: "Iran", capital: "Tehran", region: "Asia", lat: 35.6892, lng: 51.3890 },
-    { country: "Israel", capital: "Jerusalem", region: "Asia", lat: 31.7683, lng: 35.2137 },
-    { country: "UAE", capital: "Abu Dhabi", region: "Asia", lat: 24.4539, lng: 54.3773 },
-    // Americas Additions
-    { country: "Colombia", capital: "Bogotá", region: "Americas", lat: 4.7110, lng: -74.0721 },
-    { country: "Chile", capital: "Santiago", region: "Americas", lat: -33.4489, lng: -70.6693 },
-    { country: "Peru", capital: "Lima", region: "Americas", lat: -12.0464, lng: -77.0428 },
-    { country: "Venezuela", capital: "Caracas", region: "Americas", lat: 10.4806, lng: -66.9036 },
-    { country: "Cuba", capital: "Havana", region: "Americas", lat: 23.1136, lng: -82.3666 },
-    { country: "Jamaica", capital: "Kingston", region: "Americas", lat: 17.9714, lng: -76.7936 },
-    { country: "Panama", capital: "Panama city", capital_formatted: "Panama City", region: "Americas", lat: 8.9824, lng: -79.5199 },
-    { country: "Costa Rica", capital: "San José", region: "Americas", lat: 9.9281, lng: -84.0907 },
-    { country: "Guatemala", capital: "Guatemala City", region: "Americas", lat: 14.6349, lng: -90.5069 },
-    // Africa Additions
-    { country: "Ethiopia", capital: "Addis Ababa", region: "Africa", lat: 9.0300, lng: 38.7400 },
-    { country: "Ghana", capital: "Accra", region: "Africa", lat: 5.6037, lng: -0.1870 },
-    { country: "Ivory Coast", capital: "Yamoussoukro", region: "Africa", lat: 6.8276, lng: -5.2767 },
-    { country: "Tanzania", capital: "Dodoma", region: "Africa", lat: -6.1722, lng: 35.7481 },
-    { country: "Uganda", capital: "Kampala", region: "Africa", lat: 0.3476, lng: 32.5825 },
-    { country: "Algeria", capital: "Algiers", region: "Africa", lat: 36.7525, lng: 3.0420 },
-    { country: "Sudan", capital: "Khartoum", region: "Africa", lat: 15.5007, lng: 32.5599 },
-    { country: "Senegal", capital: "Dakar", region: "Africa", lat: 14.7167, lng: -17.4677 },
-    // Oceania Additions
-    { country: "Fiji", capital: "Suva", region: "Oceania", lat: -18.1248, lng: 178.4501 },
-    { country: "Papua New Guinea", capital: "Port Moresby", region: "Oceania", lat: -9.4438, lng: 147.1803 },
-    { country: "Samoa", capital: "Apia", region: "Oceania", lat: -13.85, lng: -171.75 },
-    { country: "Tonga", capital: "Nuku'alofa", region: "Oceania", lat: -21.13, lng: -175.2 },
-    { country: "Vanuatu", capital: "Port Vila", region: "Oceania", lat: -17.73, lng: 168.32 },
-    { country: "Solomon Islands", capital: "Honiara", region: "Oceania", lat: -9.43, lng: 159.95 },
-    { country: "Kiribati", capital: "South Tarawa", region: "Oceania", lat: 1.33, lng: 173.02 },
-    { country: "Micronesia", capital: "Palikir", region: "Oceania", lat: 6.92, lng: 158.15 },
-    { country: "Marshall Islands", capital: "Majuro", region: "Oceania", lat: 7.09, lng: 171.38 },
-    { country: "Tuvalu", capital: "Funafuti", region: "Oceania", lat: -8.52, lng: 179.22 },
-    { country: "Nauru", capital: "Yaren", region: "Oceania", lat: -0.55, lng: 166.92 },
-    { country: "Palau", capital: "Ngerulmud", region: "Oceania", lat: 7.5, lng: 134.62 }
-];
+// Country centers are intentionally not presented as capital coordinates.
+// Nauru has no official capital; Palestinian capital status needs a dedicated prompt.
+export const capitalsData: CountryData[] = worldCountries.filter(c => c.capitals.length > 0 && !['NR', 'PS'].includes(c.code)).map(c => ({ country: c.name, capital: c.capitals[0], region: c.region }));

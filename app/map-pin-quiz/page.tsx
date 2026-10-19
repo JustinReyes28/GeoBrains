@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { ArrowRight, RotateCcw, Home, MapPin, Trophy } from 'lucide-react';
@@ -39,6 +39,8 @@ export default function MapPinQuizPage() {
         color: string;
     } | null>(null);
 
+    const answeredRef=useRef(false);
+    const finishedRef=useRef(false);
     useEffect(() => {
         fetchQuestions();
     }, []);
@@ -46,6 +48,9 @@ export default function MapPinQuizPage() {
     const fetchQuestions = async () => {
         try {
             setLoading(true);
+            setQuestions([]);
+            answeredRef.current=false;
+            finishedRef.current=false;
             const res = await fetch('/api/map-pin/random?count=10');
             if (!res.ok) throw new Error('Failed to fetch questions');
             const data = await res.json();
@@ -64,7 +69,8 @@ export default function MapPinQuizPage() {
     };
 
     const handleMapClick = (lat: number, lng: number) => {
-        if (isAnswered) return;
+        if (answeredRef.current) return;
+        answeredRef.current=true;
 
         const currentQ = questions[currentIndex];
         setUserGuess({ lat, lng });
@@ -78,12 +84,15 @@ export default function MapPinQuizPage() {
     };
 
     const handleNext = async () => {
+        if(!answeredRef.current||finishedRef.current)return;
         if (currentIndex < questions.length - 1) {
+            answeredRef.current=false;
             setCurrentIndex(prev => prev + 1);
             setUserGuess(null);
             setIsAnswered(false);
             setResultData(null);
         } else {
+            finishedRef.current=true;
             setShowResult(true);
             try {
                 await recordQuizScore(score, questions.length * 1000, 'map-locations');
@@ -167,7 +176,7 @@ export default function MapPinQuizPage() {
             <header className="px-6 py-4 glass-panel border-b border-white/5 shrink-0 z-20 relative">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Link href="/" className="p-2 rounded-lg hover:bg-white/5 transition-colors text-text-secondary hover:text-text-primary">
+                        <Link href="/" aria-label="Back to all challenges" className="p-2 rounded-lg hover:bg-white/5 transition-colors text-text-secondary hover:text-text-primary">
                             <Home className="w-5 h-5" />
                         </Link>
                         <span className="font-bold text-lg hidden md:inline">Map Pin Challenge</span>
@@ -193,7 +202,7 @@ export default function MapPinQuizPage() {
                             <div className="text-center mb-4">
                                 <h2 className={cn("text-3xl font-black mb-1", resultData.color)}>{resultData.feedback}</h2>
                                 <p className="text-text-secondary text-lg">
-                                    <span className="text-white font-bold">{resultData.distance.toLocaleString()} km</span> from target
+                                    <span className="text-white font-bold">{resultData.distance.toLocaleString()} km</span> from the country’s center
                                 </p>
                             </div>
 
@@ -223,7 +232,7 @@ export default function MapPinQuizPage() {
                         </h1>
                         {!isAnswered && (
                             <p className="text-brand/80 text-sm mt-3 animate-pulse">
-                                Click on the map to place your pin
+                                Click near the country’s center to place your pin
                             </p>
                         )}
                     </div>

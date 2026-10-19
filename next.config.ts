@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    turbopack: { root: process.cwd() },
+    images: { qualities: [60, 75] },
+    outputFileTracingRoot: process.cwd(),
     experimental: {
         serverActions: {
             bodySizeLimit: '1mb',

@@ -7,8 +7,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "postinstall": "prisma generate"
+    "lint": "eslint app components src tests middleware.ts next.config.ts",
+    "postinstall": "prisma generate",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/quiz.test.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -59,5 +61,8 @@
     "path-to-regexp": "^6.3.0",
     "undici": "^6.21.1",
     "nodemailer": "7.0.12"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

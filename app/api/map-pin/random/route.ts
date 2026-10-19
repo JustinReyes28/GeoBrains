@@ -1,26 +1,12 @@
 import { NextResponse } from 'next/server';
 import { countriesData } from '@/src/lib/data/countries';
-
-function validateCoordinates(lat: number, lng: number): boolean {
-    return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-}
-
-export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const count = parseInt(searchParams.get('count') || '10', 10);
-
-    // Filter out invalid data if any
-    const validCountries = countriesData.filter(c =>
-        c.centerLat !== undefined &&
-        c.centerLng !== undefined &&
-        validateCoordinates(c.centerLat, c.centerLng)
-    );
-
-    // Shuffle array
-    const shuffled = [...validCountries].sort(() => 0.5 - Math.random());
-
-    // Get sub-array of first n elements after shuffled
-    const selected = shuffled.slice(0, count);
-
-    return NextResponse.json(selected);
+import { parseQuizQuery } from '@/src/lib/quiz/schema';
+import { shuffle } from '@/src/lib/quiz/random';
+export const dynamic='force-dynamic';
+export async function GET(request:Request) {
+ const parsed=parseQuizQuery(request.url);
+ if(!parsed.success) return NextResponse.json({error:'Invalid quiz parameters.'},{status:400});
+ const {region,count}=parsed.data;
+ const pool=countriesData.filter(c=>(region==='World'||c.region===region)&&Number.isFinite(c.centerLat)&&Number.isFinite(c.centerLng)&&Math.abs(c.centerLat)<=90&&Math.abs(c.centerLng)<=180);
+ return NextResponse.json(shuffle(pool).slice(0,count),{headers:{'Cache-Control':'no-store'}});
 }
