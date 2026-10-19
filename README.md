@@ -67,6 +67,10 @@ The smoke script never downloads packages or browsers. It blocks external browse
 4. [Experience and progress](docs/plan/04-experience-and-progress.md)
 5. [Validation and release](docs/plan/05-validation-and-release.md)
 
+## Future development
+
+[Android port — separate major roadmap](docs/future/ANDROID_PORT_ROADMAP.md) covers a proposed native app, shared game engine, offline/data-saving content, mobile accounts, maps, testing, and distribution. This is future work outside the completed five-phase web plan; Android implementation has not started.
+
 ## Practical limits
 
 The existing leaderboard accepts authenticated client-reported scores. Input validation constrains values but is not anti-cheat or server-authoritative scoring. Rate limiting remains enabled on every route and runs per process; multi-instance deployments should use a shared limiter. Stats War uses original approximate, undated values. Map Pin measures distance to country centers, not point-in-border accuracy. Daily stability assumes the same content version across deployments.
