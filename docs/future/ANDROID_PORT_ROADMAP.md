@@ -14,6 +14,15 @@ Use the current 195-country, 1,186-prompt snapshot as a versioned starting point
 
 Internal release gates are explicit: Android-2 produces a limited guest text alpha; Android-3 adds gameplay/mode parity; Android-4 produces the full content/offline-media beta; completing Android-5 and Android-6 produces the full-feature beta. Android-7 produces the release candidate and Android-8 the approved distribution release. A partial alpha must not be described as the completed port. Real-time multiplayer, purchases, ads, push notifications, and an iOS release belong in later proposals.
 
+## Agreed platform and connectivity direction
+
+- **Minimum OS: Android 10 and above.** Plan for `minSdkVersion = 29`, corresponding to [Android 10 / API 29](https://developer.android.com/about/versions/10/setup-sdk). Validate the selected framework, native map library, and other native modules against that minimum; do not silently raise it to satisfy a dependency.
+- **Map Pin: online first for the first release.** Require an internet connection for the map experience, subject to validating the provider’s quality, responsiveness, and cellular usage in Android-0. Offline map downloads are a possible later enhancement, not a first-release dependency.
+- **Keep offline guest practice.** Bundled text quizzes and available downloaded media remain usable without internet. Accounts, synchronization, authoritative Daily validation, ranked submission, and Map Pin require the relevant online services.
+- **Preserve data-saving behavior.** Load map data only after opening Map Pin, bound permitted caching, and provide a clear connection/error state with a way back to offline practice. Optional media downloads remain Wi-Fi-only by default.
+
+The minimum supported OS is distinct from the build/target SDK. Use compile/target SDK values compatible with the selected toolchain and the Play requirements in effect at release; the Android 10 minimum does not mean targeting API 29 for Play publication.
+
 ## Proposed architecture and decisions to prove
 
 **Working recommendation:** React Native with Expo and TypeScript, sharing platform-independent quiz logic with the website. This is a project-specific recommendation based on the existing React/TypeScript engine. It remains provisional until Android-0 proves the device, map, auth, and build requirements. React Native recommends a framework for new apps, and Expo supports shared workspace packages. See the [React Native setup guide](https://reactnative.dev/docs/environment-setup) and [Expo workspace guide](https://docs.expo.dev/guides/monorepos/).
@@ -35,11 +44,11 @@ An installable web wrapper is an alternative if the eventual priority is distrib
 
 **Prerequisite:** A future decision to start implementation. All items below remain unchecked.
 
-- [ ] Name the first-release audience, representative physical devices, supported Android range, accessibility expectations, and offline requirements.
-- [ ] Check Expo/React Native/native-map compatibility and the Android build toolchain; choose compatible versions and pin them when the work starts.
-- [ ] Prove one guest question, persistence across restart, a representative map interaction, and an external-browser sign-in callback using a small development build.
+- [ ] Use the agreed Android 10+ minimum; name the first-release audience, representative Android 10 and newer physical devices, accessibility expectations, and offline-practice requirements.
+- [ ] Check Expo/React Native/native-map compatibility and the Android build toolchain against Android 10 / API 29; choose compatible versions and pin them when the work starts.
+- [ ] Prove one guest question, persistence across restart, the proposed online map experience on Android 10 over Wi-Fi and cellular, and an external-browser sign-in callback using a small development build.
 - [ ] Compare local Android builds with optional hosted build services. Record recurring service costs, signing ownership, and a reproducible local fallback without committing to a paid service.
-- [ ] Establish measured budgets for installation size, startup time, memory, one normal quiz session, map usage, and optional downloads. Separate base-app bytes from media/map packs.
+- [ ] Establish measured budgets for installation size, startup time, memory, one normal quiz session, map usage, and optional downloads. Separate base-app bytes from optional media packs and measure online map traffic separately.
 - [ ] Record a go/no-go architecture decision, package identifier ownership, and the minimum first-release feature set.
 
 **Deliverable / exit:** A tested feasibility note and selected stack. Estimates and a schedule are produced from that evidence and available developer time; this proposal makes no fixed delivery-date promise.
@@ -97,7 +106,7 @@ An installable web wrapper is an alternative if the eventual priority is distrib
 - [ ] Filter mixed rounds to categories whose required assets are available, and explain those exclusions before starting. Image-dependent questions must not become blind guesses when an asset is missing.
 - [ ] Expose Data saver, download/cache usage, and manual refresh controls. Keep cached content playable while online services are unavailable.
 
-**Deliverable / exit:** In airplane mode, the declared offline categories and downloaded packs work after a cold start. On metered data, no optional pack downloads without a deliberate user action.
+**Deliverable / exit:** In airplane mode, the declared offline categories and downloaded packs work after a cold start; Map Pin clearly explains that internet is required. On metered data, no optional pack downloads without a deliberate user action.
 
 ## Android-5 — Map Pin and Stats War
 
@@ -106,11 +115,11 @@ An installable web wrapper is an alternative if the eventual priority is distrib
 - [ ] Rebuild Map Pin with a compatible native map component; validate provider cost, attribution, caching rights, API-key restrictions, and Android build support before choosing the provider.
 - [ ] Preserve map targets, distance scoring, longitude wrapping, marker feedback, round progression, and clear country-center scoring language.
 - [ ] Support accessible alternatives to touch-only placement, such as moving a focusable crosshair and confirming its position. Keep essential controls usable with large text.
-- [ ] Decide and label which map experience needs connectivity. If offline maps are required, select a licensed offline-capable source rather than bulk-fetching public OpenStreetMap tiles; the [OSM tile policy](https://operations.osmfoundation.org/policies/tiles/) prohibits offline prefetch/bulk use of its standard tile service.
+- [ ] Implement internet-required Map Pin for the first release, with clear offline, loading, connection-loss, and retry states. Retain results and allow returning to offline practice when connectivity fails. Defer offline map packs; any later proposal must select a licensed offline-capable source rather than bulk-fetching public OpenStreetMap tiles, as required by the [OSM tile policy](https://operations.osmfoundation.org/policies/tiles/).
 - [ ] Port Stats War with the existing higher/lower and streak rules, a dated/versioned dataset, tie handling, clean replays, and an explanation that population values are approximate.
 - [ ] Handle missing tiles, map-provider errors, empty data, and low-memory conditions without losing quiz history.
 
-**Deliverable / exit:** Both specialized games can start, finish, and replay on the supported devices. Online/offline map availability, data use, costs, and geographic limitations are documented.
+**Deliverable / exit:** Both specialized games can start, finish, and replay on Android 10+; Map Pin uses a working connection and fails gracefully without one. Its internet requirement, measured data use, provider costs, and geographic limitations are documented. Stats War can use bundled data offline.
 
 ## Android-6 — Mobile accounts, backend API, and trustworthy sync
 
@@ -134,7 +143,7 @@ An installable web wrapper is an alternative if the eventual priority is distrib
 **Depends on:** Android-4, Android-5, and Android-6.
 
 - [ ] Run shared-core unit tests, API contract tests, native component tests, and end-to-end flows on physical devices and an emulator when available.
-- [ ] Test the chosen oldest supported Android release and a current release, a lower-memory phone, small/large screens, rotation, large text, TalkBack, reduced motion, and back/navigation gestures.
+- [ ] Test Android 10 / API 29 as the minimum supported release and a current Android release, a lower-memory phone, small/large screens, rotation, large text, TalkBack, reduced motion, and back/navigation gestures.
 - [ ] Cover airplane mode, intermittent cellular data, Wi-Fi transitions, rejected downloads, disk full, interrupted content updates, expired auth, duplicate sync, process death, reboot, and clock/date changes.
 - [ ] Measure cold start, interaction latency, frame smoothness, memory, battery behavior, base installation size, update size, and bytes used by a representative quiz/map session against Android-0 budgets.
 - [ ] Check permission minimization, secret-free release bundles/logs, account data separation, signed content/update handling, dependency compatibility, and tested data migrations.
@@ -173,7 +182,7 @@ The current task creates this document and a README link only. It adds no Androi
 
 ## Decisions to revisit when scheduling the port
 
-Confirm target devices/minimum Android version, whether image categories must work offline in the base install, the required offline-map scope and provider budget, account-sync/ranked-play scope, distribution ownership, and available developer time. Record these in Android-0 before presenting a delivery estimate. No answer is required to keep this proposal as future work.
+Android 10+ and an online-first Map Pin release are the agreed baseline. Remaining decisions are representative test devices, whether image categories work offline in the base install, the online map provider and budget, account-sync/ranked-play scope, distribution ownership, and available developer time. Offline maps may be reconsidered after the first release. Record the remaining decisions in Android-0 before presenting a delivery estimate. No answer is required to keep this proposal as future work.
 
 ## Source maintenance
 

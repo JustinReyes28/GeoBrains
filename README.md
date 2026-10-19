@@ -69,7 +69,7 @@ The smoke script never downloads packages or browsers. It blocks external browse
 
 ## Future development
 
-[Android port — separate major roadmap](docs/future/ANDROID_PORT_ROADMAP.md) covers a proposed native app, shared game engine, offline/data-saving content, mobile accounts, maps, testing, and distribution. This is future work outside the completed five-phase web plan; Android implementation has not started.
+[Android port — separate major roadmap](docs/future/ANDROID_PORT_ROADMAP.md) covers a proposed native app, shared game engine, offline/data-saving content, mobile accounts, maps, testing, and distribution. The agreed baseline is Android 10+ with internet-required Map Pin and offline guest practice. This is future work outside the completed five-phase web plan; Android implementation has not started.
 
 ## Practical limits
 
