@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
+import { parseQuizQuery } from '@/src/lib/quiz/schema';
+import { shuffle } from '@/src/lib/quiz/random';
 import { statsData } from '../../../../src/lib/data/stats';
 
 export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const count = parseInt(searchParams.get('count') || '10');
+    const parsed=parseQuizQuery(request.url);
+    if(!parsed.success)return NextResponse.json({error:'Invalid quiz parameters.'},{status:400});
+    const {count}=parsed.data;
 
     // Shuffle countries
-    const shuffled = [...statsData].sort(() => 0.5 - Math.random());
+    const shuffled = shuffle(statsData);
 
     // Create pairs for comparison
     const questions = [];
@@ -17,6 +20,7 @@ export async function GET(request: Request) {
         // Randomly pick a stat type: population or area
         const statType = Math.random() > 0.5 ? 'population' : 'area';
 
+        if(countryA[statType]===countryB[statType])continue;
         questions.push({
             id: `${countryA.code}-${countryB.code}-${statType}`,
             countryA: {
@@ -30,9 +34,9 @@ export async function GET(request: Request) {
                 value: statType === 'population' ? countryB.population : countryB.area
             },
             statType,
-            label: statType === 'population' ? 'population' : 'land area'
+            label: statType === 'population' ? 'population' : 'total area'
         });
     }
 
-    return NextResponse.json(questions);
+    return NextResponse.json(questions,{headers:{'Cache-Control':'no-store'}});
 }

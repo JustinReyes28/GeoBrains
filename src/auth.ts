@@ -3,7 +3,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
-import { NextRequest } from "next/server";
+import type { Adapter } from "next-auth/adapters";
+import type { User, Prisma } from "@prisma/client";
 
 import { prisma } from "./lib/prisma";
 import { LoginSchema } from "./lib/schemas";
@@ -14,13 +15,6 @@ class AccountLockoutError extends Error {
     constructor(message: string, public lockedUntil: Date, public retryAfterSeconds: number) {
         super(message);
         this.name = "AccountLockoutError";
-    }
-}
-
-class AuthenticationError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "AuthenticationError";
     }
 }
 
@@ -38,8 +32,7 @@ import {
     setRequestContext,
     getRequestContext,
     extractClientInfoFromRequest,
-    type ClientContext,
-    requestContextMap
+    type ClientContext
 } from "./auth.edge";
 
 async function getClientInfo(request: Request, context?: ClientContext): Promise<{ ip: string; userAgent: string }> {
@@ -64,7 +57,7 @@ async function getClientInfo(request: Request, context?: ClientContext): Promise
     return { ip: "unknown", userAgent: "unknown" };
 }
 
-async function logAudit(request: Request, userId: string | null, action: string, metadata: any = {}, context?: ClientContext) {
+async function logAudit(request: Request, userId: string | null, action: string, metadata: Prisma.InputJsonObject = {}, context?: ClientContext) {
     const { ip, userAgent } = await getClientInfo(request, context);
 
     await prisma.auditLog.create({
@@ -82,14 +75,14 @@ async function logAudit(request: Request, userId: string | null, action: string,
     });
 }
 
-async function checkAccountLockout(request: Request, user: any) {
+async function checkAccountLockout(request: Request, user: User) {
     if (user.lockedUntil && new Date(user.lockedUntil) > new Date()) {
         const lockedUntilDate = new Date(user.lockedUntil);
         const retryAfterSeconds = Math.ceil((lockedUntilDate.getTime() - Date.now()) / 1000);
 
         await logAudit(request, user.id, "ACCOUNT_LOCKED", {
             reason: "Account temporarily locked due to too many failed login attempts",
-            lockedUntil: user.lockedUntil,
+            lockedUntil: user.lockedUntil?.toISOString() ?? null,
             retryAfterSeconds: retryAfterSeconds,
         });
 
@@ -102,7 +95,7 @@ async function checkAccountLockout(request: Request, user: any) {
     // No lockout - continue normally
 }
 
-async function handleFailedLogin(request: Request, user: any) {
+async function handleFailedLogin(request: Request, user: User) {
     const now = new Date();
 
     // Calculate lockout duration based on failed attempts
@@ -136,7 +129,7 @@ async function handleFailedLogin(request: Request, user: any) {
     return updatedUser;
 }
 
-async function handleSuccessfulLogin(request: Request, user: any) {
+async function handleSuccessfulLogin(request: Request, user: User) {
     // Reset security fields on successful login
     const updatedUser = await prisma.user.update({
         where: { id: user.id },
@@ -160,7 +153,8 @@ export const {
     signIn,
     signOut,
 } = NextAuth({
-    adapter: PrismaAdapter(prisma) as any,
+    // The installed adapter has its own @auth/core copy; Prisma users include our role field.
+    adapter: PrismaAdapter(prisma) as Adapter,
     session: { strategy: "jwt" },
     trustHost: true,
     ...authConfig,
@@ -251,15 +245,15 @@ export const {
         },
     },
     events: {
-        async signIn(message: any) {
+        async signIn(message) {
             // Capture request context when sign-in event occurs
             // In NextAuth, the request might be available in different ways depending on the version
             let request: Request | undefined;
 
             // Try to get request from different possible locations
-            if (message.request) {
+            if ("request" in message && message.request instanceof Request) {
                 request = message.request;
-            } else if (message?.req) {
+            } else if ("req" in message && message.req instanceof Request) {
                 // Some versions use req instead of request
                 request = message.req;
             }
@@ -278,7 +272,7 @@ export const {
                 }
             }
         },
-        async signOut(message: any) {
+        async signOut() {
             // No need to explicitly clear - WeakMap handles garbage collection automatically
         },
     },

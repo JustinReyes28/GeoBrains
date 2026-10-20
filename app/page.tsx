@@ -1,183 +1,129 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import {
-    Globe2,
-    Flag,
-    MapPin,
-    BarChart3,
-    Milestone,
-    Mountain,
-    Trophy,
-    History,
-    TrendingUp,
-    User,
-    Languages,
-    Coins
-} from 'lucide-react';
-import { cn } from '../src/lib/utils';
-
-// Dynamically import GeoMap to avoid SSR issues with Leaflet
-const GeoMap = dynamic(() => import('../src/components/Map/GeoMap').then(mod => mod.GeoMap), {
-    ssr: false,
-    loading: () => (
-        <div className="w-full h-full bg-white/5 animate-pulse rounded-xl border border-white/10 flex items-center justify-center">
-            <Globe2 className="w-8 h-8 text-white/20 animate-spin" />
-        </div>
-    )
-});
-
+import { ArrowRight, BarChart3, BookOpen, CalendarDays, Coins, Flag, Globe2, Heart, Languages, MapPin, Milestone, Mountain, Timer, Trophy, User, Compass } from 'lucide-react';
+import { contentCounts } from '@/src/lib/quiz/questions';
+import { worldCountries } from '@/src/lib/data/world';
+import { statsData } from '@/src/lib/data/stats';
+import { ProgressSummary } from '@/components/quiz/ProgressSummary';
 const categories = [
-    { id: 'capitals', name: 'Capitals', icon: Globe2, color: 'text-blue-400', desc: 'Identify world capitals', href: '/guess-the-capital' },
-    { id: 'flags', name: 'Flag ID', icon: Flag, color: 'text-red-400', desc: 'Name countries by their flags', href: '/flag-quiz' },
-    { id: 'locations', name: 'Map Pin', icon: MapPin, color: 'text-emerald-400', desc: 'Find countries on the map', href: '/map-pin-quiz' },
-    { id: 'comparisons', name: 'Stats War', icon: BarChart3, color: 'text-amber-400', desc: 'Compare population & area', href: '/stats-war' },
-    { id: 'borders', name: 'Borders', icon: Milestone, color: 'text-purple-400', desc: 'Neighboring countries', href: '/borders-quiz' },
-    { id: 'features', name: 'Landmarks', icon: Mountain, color: 'text-cyan-400', desc: 'Geographic wonders', href: '/landmarks-quiz' },
-    { id: 'languages', name: 'Languages Quiz', icon: Languages, color: 'text-blue-400', desc: 'World languages', href: '/languages-quiz' },
-    { id: 'currencies', name: 'Currencies Quiz', icon: Coins, color: 'text-emerald-400', desc: 'Global currencies', href: '/currencies-quiz' },
-    { id: 'famous-people', name: 'Famous People', icon: User, color: 'text-amber-400', desc: 'Historical figures', href: '/famous-people-quiz' },
+    { id: 'capitals', name: 'Capitals', icon: Globe2, desc: 'From Paris to Ngerulmud. Find the capital.', href: '/guess-the-capital' },
+    { id: 'flags', name: 'Flags', icon: Flag, desc: 'A whole country in a few colors and shapes.', href: '/flag-quiz' },
+    { id: 'borders', name: 'Borders', icon: Milestone, desc: 'Discover who lives next door.', href: '/borders-quiz' },
+    { id: 'landmarks', name: 'Landmarks', icon: Mountain, desc: 'Recognize the places that stay with us.', href: '/landmarks-quiz' },
+    { id: 'languages', name: 'Languages', icon: Languages, desc: 'Connect countries with their languages.', href: '/languages-quiz' },
+    { id: 'currencies', name: 'Currencies', icon: Coins, desc: 'Follow the money around the globe.', href: '/currencies-quiz' },
+    { id: 'people', name: 'Famous people', icon: User, desc: 'Meet the people behind the places.', href: '/famous-people-quiz' },
+    { id: 'regions', name: 'World regions', icon: Compass, desc: 'Place every country in the bigger picture.', href: '/regions-quiz' },
+] as const;
+const challenges = [
+    { mode: 'practice', name: 'Practice', icon: BookOpen, desc: 'Take your time. Use hints. Build your knowledge.' },
+    { mode: 'sprint', name: '60-second sprint', icon: Timer, desc: 'A race around the world against the clock.' },
+    { mode: 'survival', name: 'Survival', icon: Heart, desc: 'Three lives. How far will your knowledge take you?' },
+    { mode: 'daily', name: 'Daily challenge', icon: CalendarDays, desc: 'One shared world tour, new every day at 00:00 UTC.' },
 ];
-
 export default function Home() {
-    const router = useRouter();
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
-    const handleQuickPlay = () => {
-        // Filter categories that have an href (are implemented)
-        const availableQuizzes = categories.filter(cat => cat.href);
-
-        if (availableQuizzes.length > 0) {
-            const randomQuiz = availableQuizzes[Math.floor(Math.random() * availableQuizzes.length)];
-            if (randomQuiz.href) {
-                router.push(randomQuiz.href);
-            }
-        }
-    };
-
-    return (
-        <div className="min-h-screen bg-bg-primary text-text-primary selection:bg-brand/30">
-            {/* Header */}
-            <nav className="fixed top-0 w-full z-[1000] glass-panel border-b border-white/5">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center shadow-lg shadow-brand/20">
-                            <Globe2 className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="text-xl font-bold tracking-tight text-gradient">GeoBrains</span>
-                    </div>
-
-                    <div className="flex items-center gap-6">
-                        <Link href="/profile?tab=leaderboard" className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
-                            <Trophy className="w-4 h-4" /> Leaderboard
-                        </Link>
-                        <Link href="/profile" className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
-                            <User className="w-4 h-4" /> Profile
-                        </Link>
-                    </div>
+    return <div className="min-h-screen text-text-primary">
+        <a href="#main" className="skip-link">Skip to challenges</a>
+        <header className="border-b border-white/10 glass-panel">
+            <nav aria-label="Main navigation" className="max-w-6xl mx-auto px-4 sm:px-6 min-h-18 py-4 flex items-center justify-between gap-3">
+                <Link prefetch={false} href="/" className="flex gap-2 items-center font-black text-xl">
+                    <Globe2 aria-hidden="true" className="text-brand w-7 h-7" />GeoBrains</Link>
+                <div className="flex gap-2 sm:gap-5">
+                    <Link prefetch={false} className="nav-link" href="/profile?tab=leaderboard">
+                        <Trophy aria-hidden="true" className="w-4 h-4" />
+                        <span>Leaderboard</span>
+                    </Link>
+                    <Link prefetch={false} className="nav-link" href="/profile">
+                        <User aria-hidden="true" className="w-4 h-4" />
+                        <span>Profile</span>
+                    </Link>
                 </div>
             </nav>
-
-            <main className="pt-24 pb-12 px-6 max-w-7xl mx-auto">
-                {/* Hero Section */}
-                <section className="mb-16">
-                    <div className="flex flex-col lg:flex-row gap-12 items-center">
-                        <div className="flex-1 space-y-6">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel border border-brand/20 text-xs font-semibold text-brand tracking-wide uppercase">
-                                <TrendingUp className="w-3 h-3" /> New Challenges are Added Everyday
-                            </div>
-                            <h1 className="text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight">
-                                Master the <br />
-                                <span className="text-gradient">World Map.</span>
-                            </h1>
-                            <p className="text-lg text-text-secondary max-w-xl leading-relaxed">
-                                Test your knowledge with ultra-accurate geographic data, interactive maps,
-                                and global competition. Choose a category to begin your journey.
-                            </p>
-
-                            <div className="flex flex-wrap gap-4 pt-4">
-                                <button
-                                    onClick={handleQuickPlay}
-                                    className="px-8 py-4 rounded-xl bg-brand text-white font-bold shadow-xl shadow-brand/20 hover:scale-[1.02] transition-transform active:scale-95"
-                                >
-                                    Quick Play
-                                </button>
-                                <Link href="https://github.com/JustinReyes28/GeoBrains" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl glass-card font-bold hover:scale-[1.02] transition-transform active:scale-95">
-                                    Explore the code
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="w-full lg:w-[500px] aspect-square relative">
-                            <div className="absolute -inset-4 bg-brand/10 blur-3xl rounded-full" />
-                            <div className="h-[500px]">
-                                <GeoMap zoom={2} center={[20, 0]} />
-                            </div>
-                        </div>
+        </header>
+        <main id="main" className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+            <section className="home-hero grid lg:grid-cols-[1.2fr_1fr] items-center gap-10 py-14 sm:py-20">
+                <div>
+                    <p className="text-brand font-bold text-sm tracking-widest uppercase mb-5">Curiosity has no borders</p>
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] mb-6">A little more<br />of the world.<br />
+                        <span className="text-brand">Every day.</span>
+                    </h1>
+                    <p className="text-lg text-text-secondary leading-relaxed max-w-lg mb-8">Explore {worldCountries.length} countries through flags, capitals, neighbors, and more. Make a world tour your own, or take on today’s shared challenge.</p>
+                    <div className="flex flex-wrap gap-3">
+                        <Link prefetch={false} href="/play" className="primary-button">Start a world tour<ArrowRight aria-hidden="true" className="w-5 h-5" />
+                        </Link>
+                        <Link prefetch={false} href="/play?mode=daily" className="secondary-button">
+                            <CalendarDays aria-hidden="true" className="w-5 h-5" />Today’s challenge</Link>
                     </div>
-                </section>
-
-                {/* Categories Grid */}
-                <section>
-                    <div className="flex items-end justify-between mb-8">
-                        <div>
-                            <h2 className="text-3xl font-bold mb-2">Quiz Categories</h2>
-                            <p className="text-text-secondary">Select a mode to earn your rank</p>
+                    <p className="text-sm text-text-secondary mt-5">No account needed · Five ways to play · Learn from every answer</p>
+                </div>
+                <div className="atlas-illustration" aria-hidden="true">
+                    <div className="atlas-grid" />
+                    <Globe2 className="atlas-globe" strokeWidth={0.7} />
+                    <span className="atlas-label atlas-north">Europe</span>
+                    <span className="atlas-label atlas-east">Asia</span>
+                    <span className="atlas-label atlas-west">Americas</span>
+                    <span className="atlas-label atlas-south">Oceania</span>
+                    <span className="atlas-label atlas-center">Africa</span>
+                    <p className="atlas-caption">{worldCountries.length} countries. One shared world.</p>
+                </div>
+            </section>
+            <section aria-labelledby="modes-title">
+                <div className="flex items-end justify-between gap-4 mb-5">
+                    <div>
+                        <h2 id="modes-title" className="text-2xl sm:text-3xl font-bold mb-2">Find your way to play</h2>
+                        <p className="text-text-secondary">Mix categories, pick a region, and choose your pace.</p>
+                    </div>
+                </div>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">{challenges.map(c => {
+                    const Icon = c.icon;
+                    return <Link prefetch={false} key={c.mode} href={'/play?mode=' + c.mode} className="challenge-card">
+                        <Icon aria-hidden="true" className="text-brand w-6 h-6 mb-4" />
+                        <h3 className="font-bold mb-2">{c.name}</h3>
+                        <p className="text-sm text-text-secondary leading-relaxed">{c.desc}</p>
+                    </Link>;
+                })}</div>
+            </section>
+            <ProgressSummary />
+            <section aria-labelledby="categories-title" className="mt-14">
+                <h2 id="categories-title" className="text-2xl sm:text-3xl font-bold mb-2">Follow your curiosity</h2>
+                <p className="text-text-secondary mb-6">Stay with a favorite subject. Every category supports the new game modes.</p>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{categories.map(c => {
+                    const Icon = c.icon;
+                    return <Link prefetch={false} key={c.id} href={c.href} className="challenge-card">
+                        <div className="flex justify-between items-center mb-5">
+                            <Icon aria-hidden="true" className="text-brand w-7 h-7" />
+                            <span className="text-xs text-text-secondary">{contentCounts[c.id]} questions</span>
                         </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {categories.map((cat) => {
-                            const Icon = cat.icon;
-                            // @ts-ignore
-                            const href = cat.href;
-
-                            const content = (
-                                <>
-                                    <div className={cn("p-4 rounded-xl mb-6 bg-white/5 group-hover:scale-110 transition-transform", cat.color)}>
-                                        <Icon className="w-8 h-8" />
-                                    </div>
-                                    <h3 className="text-xl font-bold mb-2">{cat.name}</h3>
-                                    <p className="text-sm text-text-secondary leading-relaxed">
-                                        {cat.desc}
-                                    </p>
-                                </>
-                            );
-
-                            const className = cn(
-                                "glass-card p-8 rounded-2xl flex flex-col items-start text-left group w-full",
-                                selectedCategory === cat.id && "border-brand/40 bg-brand/5"
-                            );
-
-                            if (href) {
-                                return (
-                                    <Link key={cat.id} href={href} className={className}>
-                                        {content}
-                                    </Link>
-                                );
-                            }
-
-                            return (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => setSelectedCategory(cat.id)}
-                                    className={className}
-                                >
-                                    {content}
-                                </button>
-                            );
-                        })}
-                    </div>
-                </section>
-            </main>
-
-            {/* Footer */}
-            <footer className="mt-auto border-t border-white/5 py-8 text-center text-sm text-text-secondary">
-                <p>© 2025 GeoBrains • Made with AI Tools</p>
-            </footer>
-        </div>
-    );
+                        <h3 className="text-xl font-bold mb-2">{c.name}</h3>
+                        <p className="text-sm text-text-secondary">{c.desc}</p>
+                    </Link>;
+                })}
+                    <Link prefetch={false} href="/map-pin-quiz" className="challenge-card">
+                        <div className="flex justify-between items-center mb-5">
+                            <MapPin aria-hidden="true" className="text-emerald-300 w-7 h-7" />
+                            <span className="text-xs text-text-secondary">{worldCountries.length} targets · interactive map</span>
+                        </div>
+                        <h3 className="text-xl font-bold mb-2">Map pin</h3>
+                        <p className="text-sm text-text-secondary">Place your guess. See how close you came.</p>
+                    </Link>
+                    <Link prefetch={false} href="/stats-war" className="challenge-card">
+                        <div className="flex justify-between items-center mb-5">
+                            <BarChart3 aria-hidden="true" className="text-amber-300 w-7 h-7" />
+                            <span className="text-xs text-text-secondary">{statsData.length} countries · comparison game</span>
+                        </div>
+                        <h3 className="text-xl font-bold mb-2">Stats war</h3>
+                        <p className="text-sm text-text-secondary">Higher or lower? Compare area and population.</p>
+                    </Link>
+                </div>
+            </section>
+        </main>
+        <footer className="border-t border-white/10 py-7 px-4 text-sm text-text-secondary">
+            <div className="max-w-6xl mx-auto flex flex-wrap justify-between gap-3">
+                <p>GeoBrains · Keep exploring.</p>
+                <div className="flex gap-5">
+                    <Link prefetch={false} href="/content-sources" className="hover:text-white">Content & sources</Link>
+                    <a href="https://github.com/JustinReyes28/GeoBrains" target="_blank" rel="noopener noreferrer" className="hover:text-white">View on GitHub</a>
+                </div>
+            </div>
+        </footer>
+    </div>;
 }

@@ -4,19 +4,6 @@ import 'leaflet/dist/leaflet.css';
 import { cn } from '../../lib/utils';
 import L from 'leaflet';
 
-// Fix for default marker icon in Next.js
-const iconUrl = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png';
-const iconRetinaUrl = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png';
-const shadowUrl = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png';
-
-// @ts-ignore
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl,
-    iconUrl,
-    shadowUrl,
-});
-
 interface MapMarker {
     position: [number, number];
     popup?: string;
@@ -33,7 +20,7 @@ interface GeoMapProps extends MapContainerProps {
 function MapClickHandler({ onClick }: { onClick: (lat: number, lng: number) => void }) {
     useMapEvents({
         click: (e) => {
-            onClick(e.latlng.lat, e.latlng.lng);
+            onClick(e.latlng.lat, ((e.latlng.lng + 180) % 360 + 360) % 360 - 180);
         },
     });
     return null;
@@ -72,7 +59,7 @@ export const GeoMap = ({ className, children, markers = [], onMapClick, ...props
                     <Marker
                         key={i}
                         position={marker.position}
-                        icon={marker.color ? createCustomIcon(marker.color) : new L.Icon.Default()}
+                        icon={createCustomIcon(marker.color ?? "#3b82f6")}
                     >
                         {marker.popup && <Popup>{marker.popup}</Popup>}
                     </Marker>

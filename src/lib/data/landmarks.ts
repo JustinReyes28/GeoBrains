@@ -11,7 +11,7 @@ export interface LandmarkData {
     };
 }
 
-const PLACEHOLDER_IMAGE = "/landmarks/placeholder.png";
+
 
 export const landmarksData: LandmarkData[] = [
     {

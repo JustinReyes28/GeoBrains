@@ -2,6 +2,7 @@
 
 import { prisma } from "./prisma";
 import { auth } from "../auth";
+import { scoreInputSchema } from './quiz/schema';
 import { Prisma } from "@prisma/client";
 
 /**
@@ -316,6 +317,8 @@ export async function recordQuizScore(
     timeInSeconds: number = 0,
     isRawValue: boolean = false
 ) {
+    const input=scoreInputSchema.safeParse({score,totalQuestions,categorySlug,timeInSeconds,isRawValue});
+    if(!input.success)return {success:false,error:"Invalid score"};
     try {
         const session = await auth();
         if (!session?.user?.id) {

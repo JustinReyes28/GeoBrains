@@ -1,5 +1,6 @@
 "use client";
 
+import type { FamousPerson } from '@prisma/client';
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Search, Loader2 } from "lucide-react";
@@ -17,9 +18,9 @@ export default function FamousPeoplePage() {
     const [search, setSearch] = useState("");
     const queryClient = useQueryClient();
 
-    const { data: people, isLoading } = useQuery({
+    const { data: people, isLoading } = useQuery<FamousPerson[]>({
         queryKey: ["famous-people"],
-        queryFn: async () => (await fetch("/api/admin/famous-people").then(res => res.json())),
+        queryFn: async () => { const res=await fetch('/api/admin/famous-people'); if(!res.ok) throw new Error('Could not load famous-people'); return res.json(); },
     });
 
     const createMutation = useMutation({
@@ -42,7 +43,7 @@ export default function FamousPeoplePage() {
         resolver: zodResolver(FamousPersonSchema),
     });
 
-    const filtered = people?.filter((p: any) =>
+    const filtered = people?.filter((p: FamousPerson) =>
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.country.toLowerCase().includes(search.toLowerCase())
     ) || [];
@@ -84,7 +85,7 @@ export default function FamousPeoplePage() {
                     <tbody className="divide-y divide-white/5">
                         {isLoading ? (
                             <tr><td colSpan={4} className="px-6 py-8 text-center text-white/40"><Loader2 className="animate-spin mx-auto w-6 h-6" /></td></tr>
-                        ) : filtered.map((item: any) => (
+                        ) : filtered.map((item: FamousPerson) => (
                             <tr key={item.id} className="hover:bg-white/5 transition-colors">
                                 <td className="px-6 py-4">
                                     <div className="relative w-10 h-10 rounded-full overflow-hidden bg-white/10">

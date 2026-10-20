@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Globe, MapPin, Users, Landmark, FileText, BadgeDollarSign, Languages, LogOut } from "lucide-react";
+import { LayoutDashboard, Globe, MapPin, Users, Landmark, BadgeDollarSign, Languages, LogOut } from "lucide-react";
 import { signOut } from "@/src/auth";
 
 export default function AdminLayout({

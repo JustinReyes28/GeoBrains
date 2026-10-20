@@ -11,7 +11,7 @@ export async function GET() {
             orderBy: { name: 'asc' }
         });
         return NextResponse.json(languages);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Failed to fetch languages" }, { status: 500 });
     }
 }

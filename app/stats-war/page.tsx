@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
     ArrowRight,
@@ -43,9 +43,13 @@ export default function StatsWarPage() {
     const [isAnswered, setIsAnswered] = useState(false);
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
+    const answeredRef=useRef(false);
+    const finishedRef=useRef(false);
+    const endTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
     useEffect(() => {
         fetchQuestions();
         loadHighScore();
+        return ()=>{if(endTimer.current)clearTimeout(endTimer.current);};
     }, []);
 
     const loadHighScore = async () => {
@@ -55,7 +59,12 @@ export default function StatsWarPage() {
 
     const fetchQuestions = async () => {
         try {
+            if(endTimer.current)clearTimeout(endTimer.current);
+            answeredRef.current=false;
+            finishedRef.current=false;
+            setIsCorrect(null);
             setLoading(true);
+            setQuestions([]);
             const res = await fetch('/api/stats-war/random?count=15');
             if (!res.ok) throw new Error('Failed to fetch questions');
             const data = await res.json();
@@ -73,7 +82,8 @@ export default function StatsWarPage() {
     };
 
     const handleGuess = (guess: 'higher' | 'lower') => {
-        if (isAnswered) return;
+        if (answeredRef.current) return;
+        answeredRef.current=true;
 
         const currentQ = questions[currentIndex];
         const correct = guess === 'higher'
@@ -89,19 +99,21 @@ export default function StatsWarPage() {
             if (streak + 1 > highScore) setHighScore(streak + 1);
         } else {
             // Game over after a short delay to see the result
-            setTimeout(() => {
+            endTimer.current=setTimeout(() => {
                 setShowResult(true);
-                recordScore();
+                recordScore(score);
             }, 1500);
         }
     };
 
-    const recordScore = async () => {
+    const recordScore = async (finalScore:number) => {
+        if(finishedRef.current)return;
+        finishedRef.current=true;
         try {
-            await recordQuizScore(score, questions.length, 'stats-war', 0, true);
+            await recordQuizScore(finalScore, questions.length, 'stats-war', 0, true);
             // Refresh high score display
-            if (score > highScore) {
-                setHighScore(score);
+            if (finalScore > highScore) {
+                setHighScore(finalScore);
             }
         } catch (error) {
             console.error("Failed to record score:", error);
@@ -109,13 +121,15 @@ export default function StatsWarPage() {
     };
 
     const nextQuestion = () => {
+        if(!answeredRef.current||finishedRef.current)return;
         if (currentIndex < questions.length - 1) {
+            answeredRef.current=false;
             setCurrentIndex(prev => prev + 1);
             setIsAnswered(false);
             setIsCorrect(null);
         } else {
             setShowResult(true);
-            recordScore();
+            recordScore(score);
         }
     };
 
@@ -129,6 +143,8 @@ export default function StatsWarPage() {
             </div>
         );
     }
+
+    if(!questions.length) return <main className="min-h-screen flex flex-col items-center justify-center gap-4 p-4"><h1 className="text-2xl font-bold">Could not load comparisons</h1><p className="text-text-secondary">Check your connection and try again.</p><button className="primary-button" onClick={fetchQuestions}>Retry</button><Link href="/" className="secondary-button">Back to home</Link></main>;
 
     if (showResult) {
         return (
@@ -178,7 +194,7 @@ export default function StatsWarPage() {
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-brand/10 blur-[120px] rounded-full -z-10" />
 
             <header className="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between relative z-10">
-                <Link href="/" className="p-2 rounded-lg glass-card text-text-secondary hover:text-text-primary transition-colors">
+                <Link href="/" aria-label="Back to all challenges" className="p-2 rounded-lg glass-card text-text-secondary hover:text-text-primary transition-colors">
                     <Home className="w-5 h-5" />
                 </Link>
 
@@ -204,7 +220,7 @@ export default function StatsWarPage() {
                     </h1>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch h-[500px]">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch min-h-[500px]">
                     {/* Country A - Revealed */}
                     <div className="glass-card rounded-3xl p-8 flex flex-col items-center justify-center text-center relative overflow-hidden group border-white/10 group">
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" />
