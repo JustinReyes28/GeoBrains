@@ -1,6 +1,21 @@
-# GeoBrains Release Marketing Materials
+# GeoBrains Release Marketing Materials & Visual Assets
 
-This document contains social media copy tailored for **Twitter / X**, **LinkedIn**, and **Reddit** celebrating the latest release, architectural overhaul, and feature enhancements of **GeoBrains**.
+This document contains social media copy tailored for **Twitter / X**, **LinkedIn**, and **Reddit** celebrating the latest release, architectural overhaul, and feature enhancements of **GeoBrains**, complete with **4 recommended screenshots** from the repository (`public/images/`) to attach to your posts for maximum engagement.
+
+---
+
+## 📸 Recommended Visual Assets (4 Screenshots)
+
+Attach these 4 key screenshots from `public/images/` to your social media posts:
+
+1. **Dashboard Overview** (`public/images/Dashboard1.png`)
+   - *Caption/Alt Text*: "GeoBrains Main Dashboard – Choose from 8 trivia categories, World Tour, Map Pin, or Stats War!"
+2. **Quiz Category Selection** (`public/images/Quiz_Category.png`)
+   - *Caption/Alt Text*: "Interactive quiz setup with mode customization (Classic, Practice, Sprint, Survival, Daily Challenge)."
+3. **Global Leaderboard** (`public/images/Leaderboard.png`)
+   - *Caption/Alt Text*: "Real-time global leaderboard powered by high-performance PostgreSQL `DENSE_RANK()` window functions."
+4. **User Profile & Stats** (`public/images/Profile.png`)
+   - *Caption/Alt Text*: "Comprehensive user profile tracking game history, personal best streaks, and performance breakdown."
 
 ---
 
@@ -10,6 +25,8 @@ This document contains social media copy tailored for **Twitter / X**, **LinkedI
 🚀 Huge update alert! **GeoBrains** – the ultimate open-source geography quiz platform – just got a massive upgrade! 🌍✨
 
 Powered by **Next.js 16**, **React 19**, **Prisma**, and **PostgreSQL**, test your world knowledge across 195 countries and 1,186+ challenges!
+
+🖼️ *[Attach Image 1: `public/images/Dashboard1.png`]*
 
 🧵👇 [Thread below]
 
@@ -23,6 +40,8 @@ Powered by **Next.js 16**, **React 19**, **Prisma**, and **PostgreSQL**, test yo
 
 Plus interactive **Map Pin** & **Stats War** mini-games!
 
+🖼️ *[Attach Image 2: `public/images/Quiz_Category.png`]*
+
 ### Post 3 (Tech Stack & Modernization)
 ⚡ **Under the Hood Technical Upgrades:**
 • Full migration from Vite to **Next.js 16 App Router**
@@ -31,8 +50,12 @@ Plus interactive **Map Pin** & **Stats War** mini-games!
 • Database-side `DENSE_RANK()` SQL window functions for instant leaderboard indexing
 • High-security NextAuth / Auth.js with PII log masking & rate limiting
 
+🖼️ *[Attach Image 3: `public/images/Leaderboard.png`]*
+
 ### Post 4 (Call to Action / Link)
 Try GeoBrains today – no account required to play guest rounds! 🌐
+
+🖼️ *[Attach Image 4: `public/images/Profile.png`]*
 
 ⭐ Open source & developer-friendly:
 [Insert GitHub Repo Link]
@@ -62,6 +85,12 @@ Over the past few weeks, we executed a complete architectural overhaul to transf
 - **Dynamic Game Modes**: Features Classic (ranked), Practice (with 50/50 hints), Sprint (60-second time trial), Survival (3-lives sudden death), and a global Daily Challenge refreshed daily at 00:00 UTC.
 - **Interactive Map Pin & Stats War**: Point-based spatial geography and country stat comparison challenges built with interactive mapping tools.
 
+🖼️ **[Attach 4 Carousel / Grid Images]**:
+1. `public/images/Dashboard1.png` - *Dashboard & Category Selection*
+2. `public/images/Quiz_Category.png` - *Game Setup & Custom Modes*
+3. `public/images/Leaderboard.png` - *Global Leaderboard*
+4. `public/images/Profile.png` - *User Profile & Stats Analytics*
+
 Whether you're looking to challenge your geography skills or explore the codebase for full-stack Next.js patterns, GeoBrains is completely open source!
 
 Check out the code and start playing:
@@ -85,6 +114,16 @@ We’d love your feedback! What geography category or game mode would you like t
 Hey everyone! 👋
 
 I wanted to share a major overhaul of my open-source project, **GeoBrains** – a feature-packed geography learning app designed to make discovering the world engaging and fast.
+
+*(See attached screenshots showing the Dashboard, Quiz Customization, Global Leaderboard, and User Profile!)*
+
+🖼️ **Attached Screenshots**:
+1. `public/images/Dashboard1.png` - Main Dashboard
+2. `public/images/Quiz_Category.png` - Category & Mode Selector
+3. `public/images/Leaderboard.png` - High-Performance Leaderboard
+4. `public/images/Profile.png` - User Stats & Analytics
+
+---
 
 ### 🌟 What is GeoBrains?
 GeoBrains is an interactive geography platform covering all **195 countries** with **1,186+ multiple-choice prompts** across 8 core categories:
