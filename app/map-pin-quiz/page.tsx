@@ -41,19 +41,14 @@ export default function MapPinQuizPage() {
 
     const answeredRef=useRef(false);
     const finishedRef=useRef(false);
-    useEffect(() => {
-        fetchQuestions();
-    }, []);
 
     const fetchQuestions = async () => {
         try {
-            setLoading(true);
-            setQuestions([]);
-            answeredRef.current=false;
-            finishedRef.current=false;
             const res = await fetch('/api/map-pin/random?count=10');
             if (!res.ok) throw new Error('Failed to fetch questions');
             const data = await res.json();
+            answeredRef.current=false;
+            finishedRef.current=false;
             setQuestions(data);
             setCurrentIndex(0);
             setScore(0);
@@ -61,12 +56,16 @@ export default function MapPinQuizPage() {
             setUserGuess(null);
             setIsAnswered(false);
             setResultData(null);
-            setLoading(false);
         } catch (error) {
             console.error(error);
+        } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchQuestions();
+    }, []);
 
     const handleMapClick = (lat: number, lng: number) => {
         if (answeredRef.current) return;

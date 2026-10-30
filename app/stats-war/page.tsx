@@ -46,11 +46,6 @@ export default function StatsWarPage() {
     const answeredRef=useRef(false);
     const finishedRef=useRef(false);
     const endTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
-    useEffect(() => {
-        fetchQuestions();
-        loadHighScore();
-        return ()=>{if(endTimer.current)clearTimeout(endTimer.current);};
-    }, []);
 
     const loadHighScore = async () => {
         const hScore = await getCategoryHighScore('stats-war');
@@ -80,6 +75,12 @@ export default function StatsWarPage() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchQuestions();
+        loadHighScore();
+        return ()=>{if(endTimer.current)clearTimeout(endTimer.current);};
+    }, []);
 
     const handleGuess = (guess: 'higher' | 'lower') => {
         if (answeredRef.current) return;

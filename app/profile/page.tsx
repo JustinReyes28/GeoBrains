@@ -57,9 +57,9 @@ function ProfileContent() {
     const { data: session, status } = useSession();
     const isAuthenticated = status === 'authenticated';
     const tabParam = searchParams.get('tab');
-    const [activeTab, setActiveTab] = useState<'stats' | 'leaderboard'>(
-        tabParam === 'leaderboard' ? 'leaderboard' : 'stats'
-    );
+    const [selectedTab, setSelectedTab] = useState<'stats' | 'leaderboard' | null>(null);
+    const activeTab = selectedTab ?? (tabParam === 'leaderboard' ? 'leaderboard' : 'stats');
+
     const [userStats, setUserStats] = useState<UserLeaderboardStats | null>(null);
     const [categoryPerformance, setCategoryPerformance] = useState<CategoryPerformance[]>([]);
     const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
@@ -68,11 +68,6 @@ function ProfileContent() {
     const [performanceLoading, setPerformanceLoading] = useState(false);
     const [activityLoading, setActivityLoading] = useState(false);
     const [leaderboardLoading, setLeaderboardLoading] = useState(false);
-
-    // Update tab when URL changes
-    useEffect(() => {
-        setActiveTab(tabParam === 'leaderboard' ? 'leaderboard' : 'stats');
-    }, [tabParam]);
 
     // Fetch leaderboard (publicly available)
     useEffect(() => {
@@ -282,7 +277,7 @@ function ProfileContent() {
                 <div className="flex gap-2 mb-8">
                     <button
                         type="button"
-                        onClick={() => setActiveTab('stats')}
+                        onClick={() => setSelectedTab('stats')}
                         className={cn(
                             "px-6 py-3 rounded-xl font-semibold transition-all",
                             activeTab === 'stats'
@@ -297,7 +292,7 @@ function ProfileContent() {
                     </button>
                     <button
                         type="button"
-                        onClick={() => setActiveTab('leaderboard')}
+                        onClick={() => setSelectedTab('leaderboard')}
                         className={cn(
                             "px-6 py-3 rounded-xl font-semibold transition-all",
                             activeTab === 'leaderboard'
