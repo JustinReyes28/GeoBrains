@@ -24,9 +24,16 @@ export function QuizPlayer({ category, initialMode = 'classic' }: Props) {
     const history = useProgress();
     const [saveStatus, setSaveStatus] = useState('Saving your progress…');
     const [imageFailed, setImageFailed] = useState(false);
+    const [prevQuestionKey, setPrevQuestionKey] = useState<string | null>(null);
     const request = useRef<AbortController | null>(null);
     const saved = useRef(new Set<string>());
     const promptRef = useRef<HTMLHeadingElement>(null);
+
+    const currentQuestionKey = state.round ? `${state.startedAt}:${state.index}` : null;
+    if (currentQuestionKey !== prevQuestionKey) {
+        setPrevQuestionKey(currentQuestionKey);
+        setImageFailed(false);
+    }
     useEffect(() => () => request.current?.abort(), []);
     const start = async () => {
         request.current?.abort();
@@ -64,9 +71,9 @@ export function QuizPlayer({ category, initialMode = 'classic' }: Props) {
         return () => { clearInterval(timer); document.removeEventListener('visibilitychange', tick); };
     }, [state.phase, state.round]);
     useEffect(() => {
-        setImageFailed(false); if (state.phase === 'playing')
+        if (state.phase === 'playing')
             promptRef.current?.focus();
-    }, [state.index, state.phase, state.round]);
+    }, [state.index, state.phase]);
     useEffect(() => {
         const onKey = (event: KeyboardEvent) => {
             if (state.phase !== 'playing' || !state.round || event.repeat || event.ctrlKey || event.metaKey || event.altKey)
